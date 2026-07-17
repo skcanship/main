@@ -12,7 +12,7 @@ Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, sho
 | Redirect URI | `http://localhost:3000/auth/whoop/callback` |
 | Token storage | Encrypted httpOnly session cookie (`iron-session`) |
 | Body vitals | Height 6'0 · Weight tracked in browser (starts at 160 lb) |
-| Split | Back & Bis → Chest/Shoulders/Tris → Legs → Cardio & Core → Rest → repeat |
+| Split | Back & Bis + Cardio → Chest/Shoulders/Tris + Cardio → Legs + Core → Stretch / Mobility → repeat |
 
 ---
 

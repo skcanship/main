@@ -2,19 +2,22 @@
  * Operation Killmonger training split + recovery-aware deviation logic.
  *
  * Cycle (repeat):
- * 1. Back & Bis
- * 2. Chest / Shoulders / Tris
- * 3. Legs
- * 4. Cardio & Core
- * 5. Rest
+ * 1. Back & Bis + Cardio
+ * 2. Chest / Shoulders / Tris + Cardio
+ * 3. Legs + Core
+ * 4. Stretch / Mobility  ← day after legs (no cardio)
+ *
+ * Rules:
+ * - Core lives on leg days
+ * - Cardio on other training days
+ * - No cardio the day after legs (Stretch / Mobility)
  */
 
 export const SPLIT_CYCLE = [
-  "Back & Bis",
-  "Chest / Shoulders / Tris",
-  "Legs",
-  "Cardio & Core",
-  "Rest",
+  "Back & Bis + Cardio",
+  "Chest / Shoulders / Tris + Cardio",
+  "Legs + Core",
+  "Stretch / Mobility",
 ] as const;
 
 export type SplitDay = (typeof SPLIT_CYCLE)[number];
@@ -58,6 +61,10 @@ function daysBetween(a: string, b: string): number {
   return Math.round(ms / 86_400_000);
 }
 
+export function isStretchDay(day: SplitDay): boolean {
+  return day === "Stretch / Mobility";
+}
+
 /**
  * Decide whether to stick to the split or deviate based on WHOOP recovery/sleep.
  */
@@ -73,38 +80,39 @@ export function decideSplitAction(args: {
   const sleepPoor = sleepPerformance != null && sleepPerformance < 70;
 
   if (isPast) {
-    if (scheduled === "Rest") {
+    if (isStretchDay(scheduled)) {
       return {
         action: hadWorkout ? "PUSH_THROUGH" : "EXECUTE",
-        actionLabel: hadWorkout ? "Trained on rest day" : "Rest completed",
+        actionLabel: hadWorkout ? "Hard session on mobility day" : "Mobility completed",
         guidance: hadWorkout
-          ? "You trained on a scheduled rest day — watch tomorrow’s recovery before stacking load."
-          : "Rest day respected. Good for adaptation.",
+          ? "You trained hard on a stretch/mobility day — watch tomorrow’s recovery before stacking load."
+          : "Stretch/mobility day respected. Good for adaptation.",
       };
     }
     return {
       action: hadWorkout ? "EXECUTE" : "DEVIATE_REST",
-      actionLabel: hadWorkout ? "Session logged" : "Missed / rested",
+      actionLabel: hadWorkout ? "Session logged" : "Missed / mobility instead",
       guidance: hadWorkout
         ? `Completed ${scheduled}.`
         : `No WHOOP workout logged for ${scheduled}.`,
     };
   }
 
-  // Upcoming / today
-  if (scheduled === "Rest") {
+  // Upcoming / today — stretch/mobility day
+  if (isStretchDay(scheduled)) {
     if (recovery != null && recovery >= 75 && !sleepPoor) {
       return {
         action: "ACTIVE_RECOVERY",
-        actionLabel: "Optional active recovery",
+        actionLabel: "Full mobility session",
         guidance:
-          "Recovery is high on a rest day — keep it easy (walk, mobility). Do not turn this into a hard session.",
+          "Recovery is high — run a thorough stretch/mobility block. Still no hard cardio or lifting today.",
       };
     }
     return {
       action: "EXECUTE",
-      actionLabel: "Take the rest",
-      guidance: "Stick to rest. Protect the next heavy days in your split.",
+      actionLabel: "Stretch / mobility",
+      guidance:
+        "Prioritize hips, T-spine, and soft tissue. No cardio today (day after legs in the cycle). Protect tomorrow’s Back & Bis + Cardio.",
     };
   }
 
@@ -112,8 +120,8 @@ export function decideSplitAction(args: {
   if (recovery != null && recovery < 34) {
     return {
       action: "DEVIATE_REST",
-      actionLabel: "Rest instead",
-      guidance: `Recovery ${recovery} is too low for ${scheduled}. Skip or swap to full rest — resume the split tomorrow without cramming.`,
+      actionLabel: "Mobility instead",
+      guidance: `Recovery ${recovery} is too low for ${scheduled}. Swap to stretch/mobility — resume the split tomorrow without cramming.`,
     };
   }
 
@@ -121,7 +129,7 @@ export function decideSplitAction(args: {
     return {
       action: "DEVIATE_LIGHT",
       actionLabel: "Lighten the session",
-      guidance: `Recovery ${recovery} suggests cutting volume ~40% on ${scheduled}. Keep the movement pattern, drop intensity.`,
+      guidance: `Recovery ${recovery} suggests cutting volume ~40% on ${scheduled}. Keep the pattern, drop intensity; shorten cardio if included.`,
     };
   }
 
@@ -129,7 +137,7 @@ export function decideSplitAction(args: {
     return {
       action: "DEVIATE_LIGHT",
       actionLabel: "Sleep-compromised — go light",
-      guidance: `Sleep performance is low. Run a shorter ${scheduled} session or shift Cardio & Core if this isn’t already that day.`,
+      guidance: `Sleep performance is low. Run a shorter ${scheduled} session.`,
     };
   }
 
@@ -150,7 +158,10 @@ export function decideSplitAction(args: {
 
 export function buildSplitAgenda(args: {
   todayIso?: string;
-  /** Anchor date for day 0 of the cycle (Back & Bis). Defaults to a stable epoch Monday-style anchor. */
+  /**
+   * Anchor date for day 0 of the cycle (Back & Bis + Cardio).
+   * Default: aligned so *today* is Stretch / Mobility and *tomorrow* is Back & Bis + Cardio.
+   */
   cycleAnchorIso?: string;
   recoveriesByDate: Map<string, number>;
   sleepPerfByDate: Map<string, number>;
@@ -160,8 +171,9 @@ export function buildSplitAgenda(args: {
   futureDays?: number;
 }): SplitAgenda {
   const todayIso = args.todayIso ?? dayKey(new Date());
-  // Default anchor: 2026-01-05 (Monday) so the cycle is deterministic for the user
-  const anchor = args.cycleAnchorIso ?? "2026-01-05";
+  // Stretch / Mobility is index 3 → anchor = today - 3 so today lands on mobility, tomorrow on Back & Bis + Cardio
+  const stretchIndex = SPLIT_CYCLE.indexOf("Stretch / Mobility");
+  const anchor = args.cycleAnchorIso ?? addDays(todayIso, -stretchIndex);
   const pastDays = args.pastDays ?? 7;
   const futureDays = args.futureDays ?? 7;
 
@@ -176,19 +188,18 @@ export function buildSplitAgenda(args: {
     const scheduled = SPLIT_CYCLE[dayIndex];
     const isToday = date === todayIso;
     const isPast = date < todayIso;
-    const recoveryScore = args.recoveriesByDate.get(date) ?? (isToday ? args.recoveriesByDate.get(todayIso) ?? null : null);
+    const recoveryScore = args.recoveriesByDate.get(date) ?? null;
     const sleepPerformance = args.sleepPerfByDate.get(date) ?? null;
     const strain = args.strainByDate.get(date) ?? null;
     const whoopWorkouts = args.workoutsByDate.get(date) ?? [];
     const decision = decideSplitAction({
       scheduled,
-      recoveryScore: isToday || !isPast ? recoveryScore : recoveryScore,
+      recoveryScore,
       sleepPerformance,
       isPast,
       hadWorkout: whoopWorkouts.length > 0,
     });
 
-    // For today with no dated recovery map hit, still use provided today recovery via recoveriesByDate
     days.push({
       date,
       dayIndex,
@@ -205,7 +216,6 @@ export function buildSplitAgenda(args: {
     });
   }
 
-  // Attach latest recovery to today if missing (WHOOP recovery often keyed to sleep end date)
   const today = days.find((d) => d.isToday)!;
   if (today.recoveryScore == null) {
     const latest = [...args.recoveriesByDate.entries()].sort((a, b) => b[0].localeCompare(a[0]))[0];
@@ -226,9 +236,11 @@ export function buildSplitAgenda(args: {
 
   let summary: string;
   if (today.action === "DEVIATE_REST") {
-    summary = `Protocol deviation: rest today instead of ${today.scheduled}. Resume the split tomorrow.`;
+    summary = `Protocol deviation: stretch/mobility today instead of ${today.scheduled}. Resume the split tomorrow.`;
   } else if (today.action === "DEVIATE_LIGHT") {
     summary = `Protocol modification: lighten ${today.scheduled} based on recovery.`;
+  } else if (isStretchDay(today.scheduled)) {
+    summary = `Protocol locked: Stretch / Mobility today. Tomorrow: Back & Bis + Cardio.`;
   } else {
     summary = `Protocol locked: execute ${today.scheduled}.`;
   }

@@ -3,7 +3,7 @@
  * and WHOOP recovery-aware deviation actions.
  */
 
-import type { SplitAction, SplitDay } from "@/lib/split-plan";
+import { isStretchDay, type SplitAction, type SplitDay } from "@/lib/split-plan";
 
 export type DayType =
   | "Heavy strength"
@@ -43,9 +43,16 @@ export type PlanInputs = {
   splitAction: SplitAction;
 };
 
+const CARDIO_FINISHER: Exercise = {
+  name: "Zone 2 Cardio (Bike / Incline Walk / Easy Jog)",
+  sets: 1,
+  reps: "25–35 min",
+  notes: "Conversational pace — after lifts",
+};
+
 const SPLIT_SESSIONS: Record<SplitDay, { focus: string; exercises: Exercise[]; tips: string[] }> = {
-  "Back & Bis": {
-    focus: "Pull strength + arm hypertrophy",
+  "Back & Bis + Cardio": {
+    focus: "Pull strength + arms, then Zone 2 cardio",
     exercises: [
       { name: "Weighted Pull-Ups or Lat Pulldown", sets: 4, reps: "6–8" },
       { name: "Barbell or Chest-Supported Row", sets: 4, reps: "6–8" },
@@ -53,11 +60,16 @@ const SPLIT_SESSIONS: Record<SplitDay, { focus: string; exercises: Exercise[]; t
       { name: "Face Pulls", sets: 3, reps: "12–15" },
       { name: "EZ-Bar Curl", sets: 3, reps: "8–12" },
       { name: "Incline Dumbbell Curl", sets: 2, reps: "10–12" },
+      CARDIO_FINISHER,
     ],
-    tips: ["Drive elbows, full stretch on rows", "Keep biceps work strict — no swing"],
+    tips: [
+      "Drive elbows, full stretch on rows",
+      "Keep biceps work strict — no swing",
+      "Cardio after lifting, keep it Zone 2",
+    ],
   },
-  "Chest / Shoulders / Tris": {
-    focus: "Press strength + shoulder volume",
+  "Chest / Shoulders / Tris + Cardio": {
+    focus: "Press strength + shoulders, then Zone 2 cardio",
     exercises: [
       { name: "Barbell or Dumbbell Bench Press", sets: 4, reps: "5–8" },
       { name: "Incline Dumbbell Press", sets: 3, reps: "8–10" },
@@ -65,39 +77,47 @@ const SPLIT_SESSIONS: Record<SplitDay, { focus: string; exercises: Exercise[]; t
       { name: "Lateral Raises", sets: 3, reps: "12–15" },
       { name: "Cable Tricep Pushdown", sets: 3, reps: "10–12" },
       { name: "Overhead Tricep Extension", sets: 2, reps: "10–12" },
+      CARDIO_FINISHER,
     ],
-    tips: ["Leave 1–2 reps in reserve on heavy presses", "Control the eccentric on laterals"],
+    tips: [
+      "Leave 1–2 reps in reserve on heavy presses",
+      "Control the eccentric on laterals",
+      "Cardio after pressing — legs get tomorrow’s focus soon",
+    ],
   },
-  Legs: {
-    focus: "Lower-body strength + posterior chain",
+  "Legs + Core": {
+    focus: "Lower-body strength + trunk stability (no separate cardio finisher)",
     exercises: [
       { name: "Back Squat or Front Squat", sets: 4, reps: "5–8" },
       { name: "Romanian Deadlift", sets: 3, reps: "6–8" },
       { name: "Walking Lunges", sets: 3, reps: "8/leg" },
       { name: "Leg Press or Hack Squat", sets: 3, reps: "8–12" },
       { name: "Calf Raises", sets: 3, reps: "10–15" },
-    ],
-    tips: ["Brace hard — protect the spine", "Full depth you can own"],
-  },
-  "Cardio & Core": {
-    focus: "Fat-loss Zone 2 + trunk stability",
-    exercises: [
-      { name: "Zone 2 Bike / Incline Walk / Jog", sets: 1, reps: "30–40 min", notes: "Conversational pace" },
       { name: "Hanging Knee Raises", sets: 3, reps: "10–15" },
       { name: "Cable Woodchoppers", sets: 3, reps: "10/side" },
       { name: "Plank", sets: 3, reps: "40–60s" },
-      { name: "Dead Bug", sets: 2, reps: "8/side" },
     ],
-    tips: ["Stay mostly Zone 2", "Core quality over marathon sets"],
+    tips: [
+      "Brace hard — protect the spine",
+      "Core after legs while the trunk is primed",
+      "No cardio today — tomorrow is Stretch / Mobility (no cardio after legs)",
+    ],
   },
-  Rest: {
-    focus: "Recovery — let the protocol compound",
+  "Stretch / Mobility": {
+    focus: "Recovery mobility — no hard training, no cardio",
     exercises: [
-      { name: "Easy Outdoor Walk", sets: 1, reps: "20–40 min" },
-      { name: "Hip / T-Spine Mobility Flow", sets: 1, reps: "10–15 min" },
-      { name: "Light Foam Rolling", sets: 1, reps: "5–10 min" },
+      { name: "90/90 Hip Flow", sets: 2, reps: "8/side" },
+      { name: "World’s Greatest Stretch", sets: 2, reps: "5/side" },
+      { name: "T-Spine Openers (quadruped or bench)", sets: 2, reps: "8/side" },
+      { name: "Couch Stretch / Hip Flexor", sets: 2, reps: "60s/side" },
+      { name: "Hamstring + Calf Soft Tissue", sets: 1, reps: "8–10 min" },
+      { name: "Easy Walk (optional)", sets: 1, reps: "15–25 min", notes: "Walk only — not cardio intervals" },
     ],
-    tips: ["No hard training", "Prioritize protein + earlier sleep"],
+    tips: [
+      "This replaces rest days — treat it as intentional recovery",
+      "No structured cardio the day after legs",
+      "Prioritize protein + earlier sleep",
+    ],
   },
 };
 
@@ -121,25 +141,29 @@ export function recommendTrainingPlan(input: PlanInputs): TrainingPlan {
   const base = SPLIT_SESSIONS[splitDay];
   let intensity = intensityFromRecovery(input.recoveryScore);
   let exercises = base.exercises;
-  let dayType: DayType =
-    splitDay === "Rest"
-      ? "Rest"
-      : splitDay === "Cardio & Core"
-        ? "Conditioning"
-        : intensity === "Heavy"
-          ? "Heavy strength"
-          : intensity === "Moderate"
-            ? "Hypertrophy"
-            : "Conditioning";
+  let dayType: DayType = isStretchDay(splitDay)
+    ? "Rest"
+    : splitDay === "Legs + Core"
+      ? intensity === "Heavy"
+        ? "Heavy strength"
+        : "Hypertrophy"
+      : intensity === "Heavy"
+        ? "Heavy strength"
+        : intensity === "Moderate"
+          ? "Hypertrophy"
+          : "Conditioning";
 
   if (input.splitAction === "DEVIATE_REST") {
     intensity = "Rest";
     dayType = "Rest";
-    exercises = SPLIT_SESSIONS.Rest.exercises;
+    exercises = SPLIT_SESSIONS["Stretch / Mobility"].exercises;
   } else if (input.splitAction === "DEVIATE_LIGHT" || input.splitAction === "ACTIVE_RECOVERY") {
     intensity = input.splitAction === "ACTIVE_RECOVERY" ? "Rest" : "Light";
     dayType = input.splitAction === "ACTIVE_RECOVERY" ? "Rest" : "Conditioning";
-    exercises = input.splitAction === "ACTIVE_RECOVERY" ? SPLIT_SESSIONS.Rest.exercises : lighten(base.exercises);
+    exercises =
+      input.splitAction === "ACTIVE_RECOVERY"
+        ? SPLIT_SESSIONS["Stretch / Mobility"].exercises
+        : lighten(base.exercises);
   }
 
   const parts: string[] = [];

@@ -66,8 +66,8 @@ export default function LandingClient() {
           Killmonger
         </h1>
         <p className="animate-fade-up-1 mt-6 max-w-md text-base leading-relaxed text-[var(--ink-muted)] sm:text-lg">
-          Where luxury performance meets precision recovery. Your WHOOP data, training protocol, and
-          body metrics — refined into one command.
+          Where luxury performance meets precision recovery. WHOOP data, body metrics, and a split
+          built around Back & Bis + Cardio, Push + Cardio, Legs + Core, and Stretch / Mobility.
         </p>
 
         <div className="animate-fade-up-2 mt-10">
