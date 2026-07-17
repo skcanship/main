@@ -1,6 +1,8 @@
-# PulsePlan — WHOOP Health Dashboard
+# Operation Killmonger — WHOOP Tactical Command Center
 
-Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, shows a recovery / sleep / strain dashboard, and recommends a daily training block for **muscle gain + fat loss**.
+Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, shows a JARVIS-style recovery / sleep / strain HUD, tracks body vitals, and runs a recovery-aware training split for **muscle gain + fat loss**.
+
+**Brand palette (Colours Cafe):** Seal Brown `#5A2C07` · Moss Green `#8C8D68`
 
 | Choice | Value |
 | --- | --- |
@@ -9,6 +11,8 @@ Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, sho
 | Charts | Recharts |
 | Redirect URI | `http://localhost:3000/auth/whoop/callback` |
 | Token storage | Encrypted httpOnly session cookie (`iron-session`) |
+| Body vitals | Height 6'0 · Weight tracked in browser (starts at 160 lb) |
+| Split | Back & Bis → Chest/Shoulders/Tris → Legs → Cardio & Core → Rest → repeat |
 
 ---
 

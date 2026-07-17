@@ -37,34 +37,31 @@ export default function LandingClient() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(120deg, rgba(11,18,16,0.2) 0%, rgba(11,18,16,0.75) 55%, rgba(11,18,16,0.92) 100%), url(\"data:image/svg+xml,%3Csvg viewBox='0 0 800 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%231f9e6a'/%3E%3Cstop offset='1' stop-color='%230b1210'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23g)'/%3E%3Cpath d='M0 420 Q200 300 400 380 T800 320 V600 H0Z' fill='%233dffa8' fill-opacity='0.12'/%3E%3Cpath d='M0 480 Q250 360 500 440 T800 400 V600 H0Z' fill='%233dffa8' fill-opacity='0.08'/%3E%3C/svg%3E\")",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+            "radial-gradient(ellipse 70% 50% at 50% 20%, rgba(90,44,7,0.55), transparent 70%), linear-gradient(120deg, rgba(12,8,5,0.2), rgba(12,8,5,0.92))",
         }}
       />
+      <div className="scanline pointer-events-none absolute inset-0" />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col justify-center px-6 py-16 sm:px-10">
-        <p className="font-display animate-rise text-sm font-semibold tracking-[0.28em] text-[var(--accent)] uppercase">
-          PulsePlan
-        </p>
-        <h1 className="font-display animate-rise-delay-1 mt-4 max-w-3xl text-5xl leading-[0.95] font-bold tracking-tight text-[var(--ink)] sm:text-7xl">
-          Train from recovery,
-          <span className="block text-[var(--accent)]">not guesswork.</span>
+        <p className="hud-label animate-rise">Colours Cafe · Tactical OS</p>
+        <h1 className="font-display animate-rise-delay-1 mt-4 max-w-4xl text-5xl leading-[1.05] tracking-[0.04em] text-[var(--ink)] sm:text-7xl">
+          Operation
+          <span className="mt-2 block text-[var(--moss-bright)]">Killmonger</span>
         </h1>
         <p className="animate-rise-delay-2 mt-6 max-w-xl text-lg text-[var(--ink-muted)] sm:text-xl">
-          Connect WHOOP to see recovery, sleep, and strain — then get a daily training block built for
-          muscle gain and fat loss.
+          JARVIS-grade command center for WHOOP recovery, strain, body vitals, and a recovery-aware
+          split: Back & Bis → Chest/Shoulders/Tris → Legs → Cardio & Core → Rest.
         </p>
 
         <div className="animate-rise-delay-2 mt-10 flex flex-wrap items-center gap-4">
           {checking ? (
-            <span className="text-[var(--ink-muted)]">Checking connection…</span>
+            <span className="font-mono text-[var(--moss)]">Scanning uplink…</span>
           ) : (
             <a
               href="/auth/whoop"
-              className="animate-glow inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-7 py-3.5 text-base font-semibold text-[#062118] transition hover:brightness-110"
+              className="inline-flex items-center justify-center border border-[var(--moss)] bg-[var(--seal)] px-8 py-3.5 font-semibold tracking-[0.18em] text-[var(--ink)] uppercase transition hover:bg-[var(--seal-deep)]"
             >
-              Connect WHOOP
+              Initialize WHOOP Link
             </a>
           )}
         </div>
@@ -72,7 +69,7 @@ export default function LandingClient() {
         {error ? (
           <div
             role="alert"
-            className="mt-8 max-w-xl border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[#ffb4b4]"
+            className="mt-8 max-w-xl border border-[var(--danger)]/40 bg-[rgba(196,92,58,0.12)] px-4 py-3 font-mono text-sm text-[#f0b4a0]"
           >
             {error}
           </div>
