@@ -30,9 +30,9 @@ export function BodyMetricsPanel() {
 
   if (!metrics) {
     return (
-      <section className="panel px-6 py-10 sm:px-10">
+      <div className="glass-dense p-6">
         <p className="text-[var(--ink-muted)]">Loading vitals…</p>
-      </section>
+      </div>
     );
   }
 
@@ -49,11 +49,11 @@ export function BodyMetricsPanel() {
   }
 
   return (
-    <section className="panel animate-fade-up-1 px-6 py-10 sm:px-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="glass-dense p-6 sm:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="eyebrow">Subject</p>
-          <h2 className="font-display mt-3 text-4xl">Body</h2>
+          <h2 className="font-display mt-2 text-4xl">Body</h2>
         </div>
         <div className="text-right">
           <p className="eyebrow text-[var(--ink-muted)]">BMI</p>
@@ -61,24 +61,21 @@ export function BodyMetricsPanel() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-px bg-[var(--line)] sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {[
           { label: "Height", value: heightLabel(metrics) },
           { label: "Weight", value: `${metrics.weightLbs} lb` },
-          {
-            label: "Change",
-            value: `${delta > 0 ? "+" : ""}${delta} lb`,
-          },
+          { label: "Change", value: `${delta > 0 ? "+" : ""}${delta} lb` },
           { label: "Goal", value: "Recomp" },
         ].map((item) => (
-          <div key={item.label} className="bg-[var(--bg-elevated)] px-4 py-5">
+          <div key={item.label} className="border border-[var(--line)] bg-[rgba(5,5,5,0.35)] p-4">
             <p className="eyebrow text-[var(--ink-muted)]">{item.label}</p>
-            <p className="metric-num mt-3 text-2xl sm:text-3xl">{item.value}</p>
+            <p className="metric-num mt-2 text-2xl">{item.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 flex flex-wrap items-end gap-3">
+      <div className="mt-6 flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-2">
           <span className="eyebrow text-[var(--ink-muted)]">Update weight</span>
           <input
@@ -86,7 +83,7 @@ export function BodyMetricsPanel() {
             step="0.1"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            className="w-36 border border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 text-[var(--ink)] outline-none focus:border-[var(--accent)]"
+            className="w-36 border border-[var(--line)] bg-[rgba(5,5,5,0.5)] px-3 py-2.5 text-[var(--ink)] outline-none focus:border-[var(--accent)]"
           />
         </label>
         <button type="button" onClick={commitWeight} className="btn-primary">
@@ -94,20 +91,20 @@ export function BodyMetricsPanel() {
         </button>
       </div>
 
-      <div className="mt-8 h-44 w-full">
+      <div className="mt-6 h-40 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="weightFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#c2a878" stopOpacity={0.35} />
+                <stop offset="0%" stopColor="#c2a878" stopOpacity={0.4} />
                 <stop offset="100%" stopColor="#c2a878" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="date" stroke="#6b6661" tick={{ fill: "#9a9590", fontSize: 11 }} />
+            <XAxis dataKey="date" stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 11 }} />
             <YAxis
               domain={["dataMin - 2", "dataMax + 2"]}
               stroke="#6b6661"
-              tick={{ fill: "#9a9590", fontSize: 11 }}
+              tick={{ fill: "#a8a29a", fontSize: 11 }}
               width={36}
             />
             <Tooltip
@@ -121,6 +118,6 @@ export function BodyMetricsPanel() {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </section>
+    </div>
   );
 }

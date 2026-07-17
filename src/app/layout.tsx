@@ -15,9 +15,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Operation Killmonger",
+  title: "ShankoFIT",
   description:
-    "A luxury performance dashboard powered by WHOOP — recovery, training protocol, and body metrics.",
+    "ShankoFIT — a dynamic WHOOP-powered performance experience for recovery, training, and body metrics.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

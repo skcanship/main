@@ -1,8 +1,8 @@
-# Operation Killmonger — WHOOP Tactical Command Center
+# ShankoFIT — WHOOP Performance Experience
 
-Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, shows a JARVIS-style recovery / sleep / strain HUD, tracks body vitals, and runs a recovery-aware training split for **muscle gain + fat loss**.
+Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, with a cinematic scroll-driven dashboard for recovery / sleep / strain, body vitals, and a recovery-aware training split.
 
-**Visual direction:** Equinox-inspired luxury — stark black, warm ivory, champagne accent; condensed display type (Oswald) + Manrope.
+**Visual direction:** Equinox-style full-bleed backgrounds + Serval-like dynamic motion (Framer Motion parallax / scroll reveals). Dense glass panels — no empty whitespace voids.
 
 | Choice | Value |
 | --- | --- |

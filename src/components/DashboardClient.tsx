@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import type { DashboardPayload } from "@/lib/whoop/dashboard";
 import { TodayCard } from "@/components/TodayCard";
 import { TrendsChart } from "@/components/TrendsChart";
@@ -9,6 +10,7 @@ import { TrainingPlanCard } from "@/components/TrainingPlanCard";
 import { WorkoutsList } from "@/components/WorkoutsList";
 import { BodyMetricsPanel } from "@/components/BodyMetricsPanel";
 import { SplitCalendar } from "@/components/SplitCalendar";
+import { FlowSection, FadeIn } from "@/components/FlowSection";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -45,81 +47,117 @@ export default function DashboardClient() {
   }
 
   return (
-    <main className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-6 py-8 sm:px-10">
-        <div>
-          <p className="font-display text-sm tracking-[0.35em]">Operation Killmonger</p>
-          {data?.user ? (
-            <p className="mt-3 text-sm text-[var(--ink-muted)]">
-              Welcome back, {data.user.firstName}
-            </p>
-          ) : (
-            <p className="mt-3 text-sm text-[var(--ink-muted)]">Performance dashboard</p>
-          )}
-        </div>
-        <div className="flex gap-3">
-          <button type="button" onClick={() => void load()} className="btn-ghost">
-            Refresh
-          </button>
-          <button type="button" onClick={() => void logout()} className="btn-ghost">
-            Disconnect
-          </button>
+    <main className="overflow-x-hidden bg-[#050505]">
+      <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(5,5,5,0.75)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
+          <div>
+            <p className="font-display text-sm tracking-[0.28em]">ShankoFIT</p>
+            {data?.user ? (
+              <p className="text-xs text-[var(--ink-muted)]">{data.user.firstName}</p>
+            ) : null}
+          </div>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => void load()} className="btn-ghost !py-2 !px-3">
+              Refresh
+            </button>
+            <button type="button" onClick={() => void logout()} className="btn-ghost !py-2 !px-3">
+              Disconnect
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-0 pb-16 sm:px-0">
-        {loading ? (
-          <p className="px-6 text-sm tracking-wide text-[var(--ink-muted)] sm:px-10">Loading…</p>
-        ) : null}
-
-        {error ? (
-          <div
-            role="alert"
-            className="mx-6 mb-6 border border-[var(--bad)]/40 bg-[rgba(196,122,106,0.1)] px-4 py-3 text-sm text-[#e8b4a8] sm:mx-10"
+      {loading ? (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <motion.p
+            className="text-sm tracking-[0.2em] text-[var(--accent)] uppercase"
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.6, repeat: Infinity }}
           >
-            {error}
-          </div>
-        ) : null}
+            Syncing ShankoFIT…
+          </motion.p>
+        </div>
+      ) : null}
 
-        {data ? (
-          <div className="space-y-0">
-            <TodayCard today={data.today} />
-            <BodyMetricsPanel />
-            <SplitCalendar split={data.split} />
-            <TrainingPlanCard plan={data.plan} />
+      {error ? (
+        <div
+          role="alert"
+          className="mx-5 mt-4 border border-[var(--bad)]/40 bg-[rgba(196,122,106,0.12)] px-4 py-3 text-sm text-[#e8b4a8] sm:mx-8"
+        >
+          {error}
+        </div>
+      ) : null}
 
-            <div className="grid lg:grid-cols-3">
-              <section className="panel px-6 py-10 sm:px-8">
-                <p className="eyebrow">Recovery</p>
-                <p className="metric-num mt-4 text-5xl text-[var(--good)]">
-                  {data.today.recoveryScore ?? "—"}
-                </p>
-                <p className="mt-3 text-sm text-[var(--ink-muted)]">
-                  HRV {data.today.hrvMs ?? "—"} ms · RHR {data.today.restingHr ?? "—"} bpm
-                </p>
-              </section>
-              <section className="panel px-6 py-10 sm:px-8">
-                <p className="eyebrow">Sleep</p>
-                <p className="metric-num mt-4 text-5xl text-[var(--accent)]">
-                  {data.today.sleepDurationHours ?? "—"}
-                  <span className="text-xl text-[var(--ink-muted)] normal-case tracking-normal"> h</span>
-                </p>
-                <p className="mt-3 text-sm text-[var(--ink-muted)]">
-                  Performance {data.today.sleepPerformance ?? "—"}%
-                </p>
-              </section>
-              <section className="panel px-6 py-10 sm:px-8">
-                <p className="eyebrow">Strain</p>
-                <p className="metric-num mt-4 text-5xl">{data.today.strain ?? "—"}</p>
-                <p className="mt-3 text-sm text-[var(--ink-muted)]">Daily load · 0–21</p>
-              </section>
-            </div>
+      {data ? (
+        <>
+          <FlowSection index={0}>
+            <FadeIn>
+              <TodayCard today={data.today} />
+            </FadeIn>
+          </FlowSection>
 
-            <TrendsChart trends={data.trends} />
-            <WorkoutsList workouts={data.workouts} />
-          </div>
-        ) : null}
-      </div>
+          <FlowSection index={1}>
+            <FadeIn>
+              <BodyMetricsPanel />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={2}>
+            <FadeIn>
+              <SplitCalendar split={data.split} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={3}>
+            <FadeIn>
+              <TrainingPlanCard plan={data.plan} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={4}>
+            <FadeIn>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="glass-dense p-6">
+                  <p className="eyebrow">Recovery</p>
+                  <p className="metric-num mt-3 text-5xl text-[var(--good)]">
+                    {data.today.recoveryScore ?? "—"}
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--ink-muted)]">
+                    HRV {data.today.hrvMs ?? "—"} · RHR {data.today.restingHr ?? "—"}
+                  </p>
+                </div>
+                <div className="glass-dense p-6">
+                  <p className="eyebrow">Sleep</p>
+                  <p className="metric-num mt-3 text-5xl text-[var(--accent)]">
+                    {data.today.sleepDurationHours ?? "—"}
+                    <span className="text-lg text-[var(--ink-muted)] normal-case tracking-normal"> h</span>
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--ink-muted)]">
+                    Perf {data.today.sleepPerformance ?? "—"}%
+                  </p>
+                </div>
+                <div className="glass-dense p-6">
+                  <p className="eyebrow">Strain</p>
+                  <p className="metric-num mt-3 text-5xl">{data.today.strain ?? "—"}</p>
+                  <p className="mt-2 text-sm text-[var(--ink-muted)]">Daily load 0–21</p>
+                </div>
+              </div>
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={5}>
+            <FadeIn>
+              <TrendsChart trends={data.trends} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={0}>
+            <FadeIn>
+              <WorkoutsList workouts={data.workouts} />
+            </FadeIn>
+          </FlowSection>
+        </>
+      ) : null}
     </main>
   );
 }

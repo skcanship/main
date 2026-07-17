@@ -1,5 +1,5 @@
 /**
- * Operation Killmonger — session prescription tied to the user's split
+ * ShankoFIT — session prescription tied to the user's split
  * and WHOOP recovery-aware deviation actions.
  */
 
@@ -179,6 +179,6 @@ export function recommendTrainingPlan(input: PlanInputs): TrainingPlan {
     focus: base.focus,
     exercises,
     tips: base.tips,
-    rationale: `Operation Killmonger protocol — ${parts.join(" · ")}. Goal: muscle gain + fat loss.`,
+    rationale: `ShankoFIT protocol — ${parts.join(" · ")}. Goal: muscle gain + fat loss.`,
   };
 }

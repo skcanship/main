@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -8,6 +9,9 @@ export default function LandingClient() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [checking, setChecking] = useState(true);
+  const { scrollYProgress } = useScroll();
+  const heroScale = useTransform(scrollYProgress, [0, 0.35], [1, 1.12]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.35]);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,7 +24,7 @@ export default function LandingClient() {
           return;
         }
       } catch {
-        // stay on landing
+        // stay
       } finally {
         if (!cancelled) setChecking(false);
       }
@@ -31,64 +35,169 @@ export default function LandingClient() {
   }, [router]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* Full-bleed cinematic hero plane */}
-      <div aria-hidden className="absolute inset-0 overflow-hidden">
-        <div
-          className="animate-kenburns absolute inset-0"
+    <main className="relative overflow-x-hidden bg-[#050505]">
+      {/* Full-bleed dynamic hero — no empty margins */}
+      <section className="relative min-h-screen overflow-hidden">
+        <motion.div
+          aria-hidden
+          className="absolute inset-0"
           style={{
+            scale: heroScale,
+            opacity: heroOpacity,
             backgroundImage: `
-              linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.55) 45%, rgba(10,10,10,0.92) 100%),
-              linear-gradient(90deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.15) 50%, rgba(10,10,10,0.7) 100%),
-              radial-gradient(ellipse at 30% 40%, #2a2420 0%, #0a0a0a 65%),
-              url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")
+              linear-gradient(180deg, rgba(5,5,5,0.15) 0%, rgba(5,5,5,0.45) 50%, rgba(5,5,5,0.92) 100%),
+              radial-gradient(ellipse 70% 55% at 65% 35%, rgba(194,168,120,0.28), transparent 55%),
+              radial-gradient(ellipse 50% 40% at 15% 70%, rgba(143,188,143,0.12), transparent 50%),
+              linear-gradient(135deg, #1c1612 0%, #0a0a0a 50%, #10161a 100%)
             `,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
           }}
         />
-      </div>
+        <div
+          aria-hidden
+          className="animate-orb pointer-events-none absolute -right-20 top-24 h-72 w-72 rounded-full bg-[rgba(194,168,120,0.12)] blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-16 bottom-32 h-64 w-64 rounded-full bg-[rgba(143,188,143,0.1)] blur-3xl"
+          style={{ animation: "float-orb 12s ease-in-out infinite reverse" }}
+        />
 
-      <nav className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10">
-        <p className="font-display text-sm tracking-[0.35em] text-[var(--ink)]">Operation Killmonger</p>
-        {!checking ? (
-          <a href="/auth/whoop" className="btn-ghost">
-            Connect
-          </a>
-        ) : null}
-      </nav>
-
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-88px)] max-w-6xl flex-col justify-end px-6 pb-20 sm:px-10 sm:pb-24">
-        <div className="rule mb-8 max-w-xs bg-[var(--accent)]" style={{ height: 2 }} />
-        <h1 className="font-display animate-fade-up max-w-4xl text-6xl leading-[0.92] text-[var(--ink)] sm:text-8xl">
-          Operation
-          <br />
-          Killmonger
-        </h1>
-        <p className="animate-fade-up-1 mt-6 max-w-md text-base leading-relaxed text-[var(--ink-muted)] sm:text-lg">
-          Where luxury performance meets precision recovery. WHOOP data, body metrics, and a split
-          built around Back & Bis + Cardio, Push + Cardio, Legs + Core, and Stretch / Mobility.
-        </p>
-
-        <div className="animate-fade-up-2 mt-10">
-          {checking ? (
-            <span className="text-sm tracking-wide text-[var(--ink-muted)]">Preparing…</span>
-          ) : (
-            <a href="/auth/whoop" className="btn-primary">
-              Connect WHOOP
+        <nav className="relative z-10 flex items-center justify-between px-5 py-5 sm:px-8">
+          <p className="font-display text-base tracking-[0.28em]">ShankoFIT</p>
+          {!checking ? (
+            <a href="/auth/whoop" className="btn-ghost">
+              Connect
             </a>
-          )}
-        </div>
+          ) : null}
+        </nav>
 
-        {error ? (
-          <div
-            role="alert"
-            className="animate-fade-up-3 mt-8 max-w-lg border border-[var(--bad)]/40 bg-[rgba(196,122,106,0.1)] px-4 py-3 text-sm text-[#e8b4a8]"
+        <div className="relative z-10 flex min-h-[calc(100vh-72px)] flex-col justify-end px-5 pb-16 sm:px-8 sm:pb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 36 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           >
-            {error}
-          </div>
-        ) : null}
-      </div>
+            <div className="mb-5 h-0.5 w-24 bg-[var(--accent)]" />
+            <h1 className="font-display max-w-5xl text-6xl leading-[0.9] sm:text-8xl lg:text-9xl">
+              Shanko
+              <span className="text-[var(--accent)]">FIT</span>
+            </h1>
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-[var(--ink-muted)] sm:text-lg">
+              Performance that moves with you. WHOOP recovery, a living training split, and body
+              vitals — in one cinematic flow.
+            </p>
+            <div className="mt-8">
+              {checking ? (
+                <span className="text-sm text-[var(--ink-muted)]">Preparing…</span>
+              ) : (
+                <a href="/auth/whoop" className="btn-primary">
+                  Connect WHOOP
+                </a>
+              )}
+            </div>
+            {error ? (
+              <div
+                role="alert"
+                className="mt-6 max-w-lg border border-[var(--bad)]/40 bg-[rgba(196,122,106,0.12)] px-4 py-3 text-sm text-[#e8b4a8]"
+              >
+                {error}
+              </div>
+            ) : null}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Dense feature bands — full bleed, no whitespace voids */}
+      <section className="relative min-h-[70vh] overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(ellipse at 30% 40%, rgba(194,168,120,0.2), transparent 50%), linear-gradient(160deg, #14110e, #0a0a0a 60%, #0e1412)",
+          }}
+        />
+        <motion.div
+          className="relative z-10 mx-auto grid max-w-6xl gap-4 px-5 py-16 sm:grid-cols-3 sm:px-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-15%" }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.12 } },
+          }}
+        >
+          {[
+            {
+              title: "Recovery",
+              body: "Live WHOOP recovery, HRV, and sleep — surfaced the moment you need them.",
+            },
+            {
+              title: "Protocol",
+              body: "Back & Bis + Cardio · Push + Cardio · Legs + Core · Stretch / Mobility.",
+            },
+            {
+              title: "Vitals",
+              body: "Track height, weight, and recomp progress with a clean performance read.",
+            },
+          ].map((item) => (
+            <motion.div
+              key={item.title}
+              className="glass-dense p-6"
+              variants={{
+                hidden: { opacity: 0, y: 32 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.65 } },
+              }}
+            >
+              <p className="eyebrow">{item.title}</p>
+              <p className="mt-4 text-[var(--ink-muted)] leading-relaxed">{item.body}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      <section className="relative min-h-[55vh] overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(105deg, rgba(194,168,120,0.18), transparent 40%), radial-gradient(ellipse at left, #2a2018, #050505 70%)",
+          }}
+        />
+        <div className="relative z-10 mx-auto flex min-h-[55vh] max-w-6xl flex-col justify-center px-5 py-16 sm:px-8">
+          <motion.p
+            className="eyebrow"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            Built for the grind
+          </motion.p>
+          <motion.h2
+            className="font-display mt-4 max-w-3xl text-4xl leading-[1] sm:text-6xl"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            Train smarter. Recover harder. Look the part.
+          </motion.h2>
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15 }}
+          >
+            {!checking ? (
+              <a href="/auth/whoop" className="btn-primary">
+                Enter ShankoFIT
+              </a>
+            ) : null}
+          </motion.div>
+        </div>
+      </section>
     </main>
   );
 }

@@ -20,26 +20,24 @@ export function TrendsChart({ trends }: { trends: TrendPoint[] }) {
 
   if (data.length === 0) {
     return (
-      <section className="panel px-6 py-10 sm:px-10">
+      <div className="glass-dense p-6 sm:p-8">
         <p className="eyebrow">Trends</p>
-        <h2 className="font-display mt-3 text-4xl">History</h2>
-        <p className="mt-4 text-[var(--ink-muted)]">No trend data yet.</p>
-      </section>
+        <h2 className="font-display mt-2 text-4xl">History</h2>
+        <p className="mt-3 text-[var(--ink-muted)]">No trend data yet.</p>
+      </div>
     );
   }
 
   return (
-    <section className="panel animate-fade-up-1 px-6 py-10 sm:px-10">
+    <div className="glass-dense p-6 sm:p-8">
       <p className="eyebrow">Trends</p>
-      <h2 className="font-display mt-3 text-4xl">Last 7–30 Days</h2>
-      <p className="mt-3 text-sm text-[var(--ink-muted)]">Recovery, sleep, and strain over time</p>
-
-      <div className="mt-8 h-72 w-full">
+      <h2 className="font-display mt-2 text-4xl">Last 7–30 Days</h2>
+      <div className="mt-6 h-64 w-full sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="rgba(247,244,239,0.06)" vertical={false} />
-            <XAxis dataKey="label" stroke="#6b6661" tick={{ fill: "#9a9590", fontSize: 12 }} />
-            <YAxis stroke="#6b6661" tick={{ fill: "#9a9590", fontSize: 12 }} width={36} />
+            <XAxis dataKey="label" stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 12 }} />
+            <YAxis stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 12 }} width={36} />
             <Tooltip
               contentStyle={{
                 background: "#121212",
@@ -55,6 +53,6 @@ export function TrendsChart({ trends }: { trends: TrendPoint[] }) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </section>
+    </div>
   );
 }

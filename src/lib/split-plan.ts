@@ -1,5 +1,5 @@
 /**
- * Operation Killmonger training split + recovery-aware deviation logic.
+ * ShankoFIT training split + recovery-aware deviation logic.
  *
  * Cycle (repeat):
  * 1. Back & Bis + Cardio

@@ -1,17 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Equinox-inspired luxury: stark black, warm ivory, champagne accent */
   --bg: #0a0a0a;
-  --bg-elevated: #121212;
-  --bg-soft: #1a1a1a;
+  --bg-elevated: rgba(18, 18, 18, 0.72);
+  --bg-soft: rgba(26, 26, 26, 0.85);
   --ink: #f7f4ef;
-  --ink-muted: #9a9590;
+  --ink-muted: #a8a29a;
   --ink-faint: #6b6661;
-  --line: rgba(247, 244, 239, 0.12);
-  --line-strong: rgba(247, 244, 239, 0.28);
+  --line: rgba(247, 244, 239, 0.14);
+  --line-strong: rgba(247, 244, 239, 0.32);
   --accent: #c2a878;
-  --accent-soft: rgba(194, 168, 120, 0.15);
+  --accent-soft: rgba(194, 168, 120, 0.18);
   --good: #8fbc8f;
   --warn: #d4a84b;
   --bad: #c47a6a;
@@ -24,21 +23,18 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--bg);
+  background: #050505;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-}
-
-body {
-  background:
-    radial-gradient(ellipse 90% 50% at 50% -20%, rgba(194, 168, 120, 0.08), transparent 55%),
-    linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 40%, #0a0a0a 100%);
-  background-attachment: fixed;
 }
 
 a {
@@ -60,22 +56,25 @@ input {
 
 .eyebrow {
   font-family: var(--font-body);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
-.panel {
+.glass {
   background: var(--bg-elevated);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.panel-inset {
-  background: var(--bg-soft);
+.glass-dense {
+  background: rgba(10, 10, 10, 0.55);
   border: 1px solid var(--line);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .btn-primary {
@@ -83,7 +82,7 @@ input {
   align-items: center;
   justify-content: center;
   background: var(--ink);
-  color: var(--bg);
+  color: #0a0a0a;
   padding: 0.95rem 1.75rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -94,7 +93,6 @@ input {
 
 .btn-primary:hover {
   background: var(--accent);
-  color: var(--bg);
   transform: translateY(-1px);
 }
 
@@ -103,18 +101,19 @@ input {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--line-strong);
-  background: transparent;
+  background: rgba(10, 10, 10, 0.35);
   color: var(--ink);
   padding: 0.75rem 1.25rem;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  transition: border-color 0.25s ease, color 0.25s ease;
+  transition: border-color 0.25s ease, background 0.25s ease;
 }
 
 .btn-ghost:hover {
   border-color: var(--ink);
+  background: rgba(247, 244, 239, 0.06);
 }
 
 .metric-num {
@@ -125,14 +124,13 @@ input {
   line-height: 1;
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@keyframes float-orb {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  50% {
+    transform: translate(12px, -18px) scale(1.05);
   }
 }
 
@@ -141,42 +139,14 @@ input {
     transform: scale(1);
   }
   to {
-    transform: scale(1.06);
+    transform: scale(1.08);
   }
 }
 
-@keyframes line-draw {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-.animate-fade-up {
-  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.animate-fade-up-1 {
-  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
-}
-
-.animate-fade-up-2 {
-  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
-}
-
-.animate-fade-up-3 {
-  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both;
+.animate-orb {
+  animation: float-orb 10s ease-in-out infinite;
 }
 
 .animate-kenburns {
-  animation: kenburns 18s ease-out forwards;
-}
-
-.rule {
-  height: 1px;
-  background: var(--line);
-  transform-origin: left;
-  animation: line-draw 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: kenburns 20s ease-out forwards;
 }
