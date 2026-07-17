@@ -2,7 +2,7 @@
 
 Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, shows a JARVIS-style recovery / sleep / strain HUD, tracks body vitals, and runs a recovery-aware training split for **muscle gain + fat loss**.
 
-**Brand palette (Colours Cafe):** Seal Brown `#5A2C07` · Moss Green `#8C8D68`
+**Visual direction:** Equinox-inspired luxury — stark black, warm ivory, champagne accent; condensed display type (Oswald) + Manrope.
 
 | Choice | Value |
 | --- | --- |

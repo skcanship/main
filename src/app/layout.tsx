@@ -1,42 +1,33 @@
 import type { Metadata } from "next";
-import { Cinzel, Rajdhani, Share_Tech_Mono } from "next/font/google";
+import { Manrope, Oswald } from "next/font/google";
 import "./globals.css";
 
-const cinzel = Cinzel({
+const oswald = Oswald({
   subsets: ["latin"],
-  variable: "--font-cinzel",
+  variable: "--font-oswald",
   display: "swap",
 });
 
-const rajdhani = Rajdhani({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-rajdhani",
-  display: "swap",
-});
-
-const shareTech = Share_Tech_Mono({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-share-tech",
+  variable: "--font-manrope",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Operation Killmonger — Tactical Fitness Command",
+  title: "Operation Killmonger",
   description:
-    "WHOOP-powered tactical dashboard for recovery, strain, body metrics, and a recovery-aware training split.",
+    "A luxury performance dashboard powered by WHOOP — recovery, training protocol, and body metrics.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${rajdhani.variable} ${shareTech.variable}`}>
+    <html lang="en" className={`${oswald.variable} ${manrope.variable}`}>
       <body
         style={
           {
-            ["--font-display" as string]: "var(--font-cinzel), serif",
-            ["--font-body" as string]: "var(--font-rajdhani), sans-serif",
-            ["--font-mono" as string]: "var(--font-share-tech), monospace",
+            ["--font-display" as string]: "var(--font-oswald), sans-serif",
+            ["--font-body" as string]: "var(--font-manrope), sans-serif",
           } as React.CSSProperties
         }
       >

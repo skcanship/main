@@ -1,55 +1,49 @@
 import type { DashboardPayload } from "@/lib/whoop/dashboard";
 import { HudGauge } from "@/components/HudGauge";
 
-function recoveryTone(score: number | null): "moss" | "warn" | "danger" {
-  if (score == null) return "moss";
-  if (score >= 67) return "moss";
+function recoveryTone(score: number | null): "good" | "warn" | "bad" {
+  if (score == null) return "good";
+  if (score >= 67) return "good";
   if (score >= 34) return "warn";
-  return "danger";
+  return "bad";
 }
 
 export function TodayCard({ today }: { today: DashboardPayload["today"] }) {
   return (
-    <section className="hud-panel animate-rise relative overflow-hidden p-6 sm:p-8">
-      <div className="scanline" />
-      <div className="relative z-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="hud-label">Command readout</p>
-            <h2 className="font-display mt-2 text-3xl tracking-wide">Today</h2>
-            <p className="font-mono mt-1 text-sm text-[var(--ink-muted)]">{today.dateLabel}</p>
-          </div>
-          <p className="animate-pulse-line font-mono text-xs tracking-[0.3em] text-[var(--moss-bright)]">
-            SYSTEMS NOMINAL
-          </p>
+    <section className="panel animate-fade-up px-6 py-10 sm:px-10">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow">Today</p>
+          <h2 className="font-display mt-3 text-4xl text-[var(--ink)] sm:text-5xl">Performance</h2>
         </div>
+        <p className="text-sm tracking-wide text-[var(--ink-muted)]">{today.dateLabel}</p>
+      </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
-          <HudGauge label="Recovery" value={today.recoveryScore} tone={recoveryTone(today.recoveryScore)} />
-          <HudGauge label="Day Strain" value={today.strain} max={21} tone="seal" />
-          <HudGauge label="Sleep Perf" value={today.sleepPerformance} tone="moss" unit="%" />
-          <div className="flex flex-col justify-center gap-4">
-            <div>
-              <p className="hud-label">HRV</p>
-              <p className="hud-value mt-1 text-3xl">
-                {today.hrvMs ?? "—"}
-                <span className="text-sm text-[var(--ink-muted)]"> ms</span>
-              </p>
-            </div>
-            <div>
-              <p className="hud-label">Resting HR</p>
-              <p className="hud-value mt-1 text-3xl">
-                {today.restingHr ?? "—"}
-                <span className="text-sm text-[var(--ink-muted)]"> bpm</span>
-              </p>
-            </div>
-            <div>
-              <p className="hud-label">Sleep duration</p>
-              <p className="hud-value mt-1 text-3xl">
-                {today.sleepDurationHours ?? "—"}
-                <span className="text-sm text-[var(--ink-muted)]"> h</span>
-              </p>
-            </div>
+      <div className="mt-10 grid grid-cols-2 gap-8 lg:grid-cols-4">
+        <HudGauge label="Recovery" value={today.recoveryScore} tone={recoveryTone(today.recoveryScore)} />
+        <HudGauge label="Strain" value={today.strain} max={21} tone="accent" />
+        <HudGauge label="Sleep" value={today.sleepPerformance} tone="good" unit="%" />
+        <div className="flex flex-col justify-center gap-6">
+          <div>
+            <p className="eyebrow text-[var(--ink-muted)]">HRV</p>
+            <p className="metric-num mt-2 text-4xl">
+              {today.hrvMs ?? "—"}
+              <span className="ml-1 text-sm tracking-normal text-[var(--ink-muted)] normal-case">ms</span>
+            </p>
+          </div>
+          <div>
+            <p className="eyebrow text-[var(--ink-muted)]">Resting HR</p>
+            <p className="metric-num mt-2 text-4xl">
+              {today.restingHr ?? "—"}
+              <span className="ml-1 text-sm tracking-normal text-[var(--ink-muted)] normal-case">bpm</span>
+            </p>
+          </div>
+          <div>
+            <p className="eyebrow text-[var(--ink-muted)]">Sleep duration</p>
+            <p className="metric-num mt-2 text-4xl">
+              {today.sleepDurationHours ?? "—"}
+              <span className="ml-1 text-sm tracking-normal text-[var(--ink-muted)] normal-case">h</span>
+            </p>
           </div>
         </div>
       </div>

@@ -22,14 +22,14 @@ export default function DashboardClient() {
     try {
       const res = await fetch("/api/whoop/dashboard");
       if (res.status === 401) {
-        router.replace("/?error=" + encodeURIComponent("Link WHOOP to arm the system"));
+        router.replace("/?error=" + encodeURIComponent("Connect WHOOP to continue"));
         return;
       }
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to load command center");
+      if (!res.ok) throw new Error(json.error || "Failed to load dashboard");
       setData(json);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load command center");
+      setError(err instanceof Error ? err.message : "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
@@ -45,92 +45,81 @@ export default function DashboardClient() {
   }
 
   return (
-    <main className="relative mx-auto min-h-screen max-w-6xl px-5 py-10 sm:px-8">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <main className="min-h-screen">
+      <header className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-6 py-8 sm:px-10">
         <div>
-          <p className="hud-label animate-pulse-line">Tactical OS</p>
-          <h1 className="font-display mt-2 text-4xl tracking-[0.06em] text-[var(--ink)] sm:text-5xl">
-            Operation Killmonger
-          </h1>
+          <p className="font-display text-sm tracking-[0.35em]">Operation Killmonger</p>
           {data?.user ? (
-            <p className="mt-2 font-mono text-sm text-[var(--ink-muted)]">
-              Operative {data.user.firstName} {data.user.lastName}
+            <p className="mt-3 text-sm text-[var(--ink-muted)]">
+              Welcome back, {data.user.firstName}
             </p>
           ) : (
-            <p className="mt-2 text-[var(--ink-muted)]">WHOOP command center</p>
+            <p className="mt-3 text-sm text-[var(--ink-muted)]">Performance dashboard</p>
           )}
         </div>
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => void load()}
-            className="border border-[var(--line)] px-4 py-2 font-mono text-xs tracking-wider uppercase transition hover:border-[var(--moss)]"
-          >
-            Sync
+          <button type="button" onClick={() => void load()} className="btn-ghost">
+            Refresh
           </button>
-          <button
-            type="button"
-            onClick={() => void logout()}
-            className="border border-[var(--line)] px-4 py-2 font-mono text-xs tracking-wider text-[var(--ink-muted)] uppercase transition hover:border-[var(--danger)] hover:text-[var(--danger)]"
-          >
+          <button type="button" onClick={() => void logout()} className="btn-ghost">
             Disconnect
           </button>
         </div>
       </header>
 
-      {loading ? (
-        <p className="font-mono animate-breathe text-[var(--moss)]">Establishing uplink…</p>
-      ) : null}
+      <div className="mx-auto max-w-6xl px-0 pb-16 sm:px-0">
+        {loading ? (
+          <p className="px-6 text-sm tracking-wide text-[var(--ink-muted)] sm:px-10">Loading…</p>
+        ) : null}
 
-      {error ? (
-        <div
-          role="alert"
-          className="mb-6 border border-[var(--danger)]/50 bg-[rgba(196,92,58,0.12)] px-4 py-3 font-mono text-sm text-[#f0b4a0]"
-        >
-          {error}
-        </div>
-      ) : null}
-
-      {data ? (
-        <div className="space-y-8">
-          <TodayCard today={data.today} />
-          <BodyMetricsPanel />
-          <SplitCalendar split={data.split} />
-          <TrainingPlanCard plan={data.plan} />
-
-          <div className="grid gap-8 lg:grid-cols-3">
-            <section className="hud-panel p-6">
-              <p className="hud-label">Recovery</p>
-              <p className="hud-value mt-3 text-4xl text-[var(--moss-bright)]">
-                {data.today.recoveryScore ?? "—"}
-              </p>
-              <p className="mt-2 text-sm text-[var(--ink-muted)]">
-                HRV {data.today.hrvMs ?? "—"} ms · RHR {data.today.restingHr ?? "—"} bpm
-              </p>
-            </section>
-            <section className="hud-panel p-6">
-              <p className="hud-label">Sleep</p>
-              <p className="hud-value mt-3 text-4xl text-[var(--accent-hot)]">
-                {data.today.sleepDurationHours ?? "—"}
-                <span className="text-lg text-[var(--ink-muted)]"> h</span>
-              </p>
-              <p className="mt-2 text-sm text-[var(--ink-muted)]">
-                Performance {data.today.sleepPerformance ?? "—"}%
-              </p>
-            </section>
-            <section className="hud-panel p-6">
-              <p className="hud-label">Strain</p>
-              <p className="hud-value mt-3 text-4xl" style={{ color: "#c4a35a" }}>
-                {data.today.strain ?? "—"}
-              </p>
-              <p className="mt-2 text-sm text-[var(--ink-muted)]">Physiological load 0–21</p>
-            </section>
+        {error ? (
+          <div
+            role="alert"
+            className="mx-6 mb-6 border border-[var(--bad)]/40 bg-[rgba(196,122,106,0.1)] px-4 py-3 text-sm text-[#e8b4a8] sm:mx-10"
+          >
+            {error}
           </div>
+        ) : null}
 
-          <TrendsChart trends={data.trends} />
-          <WorkoutsList workouts={data.workouts} />
-        </div>
-      ) : null}
+        {data ? (
+          <div className="space-y-0">
+            <TodayCard today={data.today} />
+            <BodyMetricsPanel />
+            <SplitCalendar split={data.split} />
+            <TrainingPlanCard plan={data.plan} />
+
+            <div className="grid lg:grid-cols-3">
+              <section className="panel px-6 py-10 sm:px-8">
+                <p className="eyebrow">Recovery</p>
+                <p className="metric-num mt-4 text-5xl text-[var(--good)]">
+                  {data.today.recoveryScore ?? "—"}
+                </p>
+                <p className="mt-3 text-sm text-[var(--ink-muted)]">
+                  HRV {data.today.hrvMs ?? "—"} ms · RHR {data.today.restingHr ?? "—"} bpm
+                </p>
+              </section>
+              <section className="panel px-6 py-10 sm:px-8">
+                <p className="eyebrow">Sleep</p>
+                <p className="metric-num mt-4 text-5xl text-[var(--accent)]">
+                  {data.today.sleepDurationHours ?? "—"}
+                  <span className="text-xl text-[var(--ink-muted)] normal-case tracking-normal"> h</span>
+                </p>
+                <p className="mt-3 text-sm text-[var(--ink-muted)]">
+                  Performance {data.today.sleepPerformance ?? "—"}%
+                </p>
+              </section>
+              <section className="panel px-6 py-10 sm:px-8">
+                <p className="eyebrow">Strain</p>
+                <p className="metric-num mt-4 text-5xl">{data.today.strain ?? "—"}</p>
+                <p className="mt-3 text-sm text-[var(--ink-muted)]">Daily load · 0–21</p>
+              </section>
+            </div>
+
+            <TrendsChart trends={data.trends} />
+            <WorkoutsList workouts={data.workouts} />
+          </div>
+        ) : null}
+      </div>
     </main>
   );
 }
