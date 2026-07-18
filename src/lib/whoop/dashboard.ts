@@ -1,6 +1,7 @@
 import type { CycleRecord, RecoveryRecord, SleepRecord, WorkoutRecord } from "@/lib/whoop/types";
 import { recommendTrainingPlan, type TrainingPlan } from "@/lib/workout-plan";
 import { buildSplitAgenda, type SplitAgenda } from "@/lib/split-plan";
+import { computeWeeklyReadiness, type WeeklyReadiness } from "@/lib/weekly-readiness";
 
 export type TodaySummary = {
   recoveryScore: number | null;
@@ -40,6 +41,7 @@ export type DashboardPayload = {
   }>;
   plan: TrainingPlan;
   split: SplitAgenda;
+  weekly: WeeklyReadiness;
 };
 
 function msToHours(ms: number | undefined | null): number | null {
@@ -178,6 +180,8 @@ export function buildDashboardData(args: {
     splitAction: split.today.action,
   });
 
+  const weekly = computeWeeklyReadiness(trends);
+
   return {
     connected: true,
     user: user
@@ -200,5 +204,6 @@ export function buildDashboardData(args: {
     }),
     plan,
     split,
+    weekly,
   };
 }

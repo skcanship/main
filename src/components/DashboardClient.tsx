@@ -12,6 +12,9 @@ import { BodyMetricsPanel } from "@/components/BodyMetricsPanel";
 import { SplitCalendar } from "@/components/SplitCalendar";
 import { FlowSection, FadeIn } from "@/components/FlowSection";
 import { JarvisOverview } from "@/components/JarvisOverview";
+import { WeeklyReadinessCard } from "@/components/WeeklyReadinessCard";
+import { NutritionCard } from "@/components/NutritionCard";
+import { LiftLogPanel } from "@/components/LiftLogPanel";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -105,23 +108,41 @@ export default function DashboardClient() {
 
           <FlowSection index={2}>
             <FadeIn>
-              <BodyMetricsPanel />
+              <WeeklyReadinessCard weekly={data.weekly} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={3}>
             <FadeIn>
-              <SplitCalendar split={data.split} />
+              <NutritionCard />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={4}>
             <FadeIn>
-              <TrainingPlanCard plan={data.plan} />
+              <LiftLogPanel />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={5}>
+            <FadeIn>
+              <BodyMetricsPanel />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={0}>
+            <FadeIn>
+              <SplitCalendar split={data.split} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={1}>
+            <FadeIn>
+              <TrainingPlanCard plan={data.plan} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={2}>
             <FadeIn>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="glass-dense p-6">

@@ -6,6 +6,7 @@ export type JarvisBriefing = {
   recoveryLine: string;
   intensityLine: string;
   liftLine: string;
+  weekLine: string;
   verdict: "GO" | "MODERATE" | "LIGHT" | "REST";
   statusLabel: string;
 };
@@ -80,6 +81,12 @@ export function buildJarvisBriefing(data: DashboardPayload): JarvisBriefing {
     liftLine = `Today's lift: ${scheduled}.`;
   }
 
+  if (data.weekly.mode === "DELOAD" && verdict !== "REST") {
+    intensityLine = `${intensityLine} Weekly flag: deload — bias lighter sets even if today looks workable.`;
+  }
+
+  const weekLine = `Weekly readiness ${data.weekly.score}/100 — ${data.weekly.label}. ${data.weekly.summary}`;
+
   const hour = new Date().getHours();
   const timeOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
 
@@ -88,6 +95,7 @@ export function buildJarvisBriefing(data: DashboardPayload): JarvisBriefing {
     recoveryLine: `Recovery status: ${word}. ${recoveryLine}`,
     intensityLine,
     liftLine,
+    weekLine,
     verdict,
     statusLabel,
   };

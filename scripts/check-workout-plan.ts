@@ -84,4 +84,23 @@ assert(agenda.today.scheduled === "Stretch / Mobility", `today should be Stretch
 const tomorrow = agenda.days.find((d) => d.date === "2026-07-18");
 assert(tomorrow?.scheduled === "Back & Bis + Cardio", `tomorrow should be Back & Bis + Cardio, got ${tomorrow?.scheduled}`);
 
-console.log("workout-plan + split checks passed");
+import { computeWeeklyReadiness } from "../src/lib/weekly-readiness";
+import { computeNutritionTargets } from "../src/lib/nutrition";
+
+const weekly = computeWeeklyReadiness([
+  { date: "2026-07-11", recovery: 30, sleepHours: 6, sleepPerformance: 60, strain: 15 },
+  { date: "2026-07-12", recovery: 28, sleepHours: 5.5, sleepPerformance: 55, strain: 16 },
+  { date: "2026-07-13", recovery: 32, sleepHours: 6, sleepPerformance: 58, strain: 14 },
+  { date: "2026-07-14", recovery: 40, sleepHours: 7, sleepPerformance: 70, strain: 12 },
+  { date: "2026-07-15", recovery: 35, sleepHours: 6.5, sleepPerformance: 65, strain: 15 },
+  { date: "2026-07-16", recovery: 38, sleepHours: 7, sleepPerformance: 68, strain: 13 },
+  { date: "2026-07-17", recovery: 33, sleepHours: 6, sleepPerformance: 62, strain: 14 },
+]);
+assert(weekly.mode === "DELOAD", `expected DELOAD, got ${weekly.mode}`);
+assert(weekly.deloadSuggested, "expected deload suggested");
+
+const nutrition = computeNutritionTargets(160);
+assert(nutrition.proteinG === 160, `expected 160g protein, got ${nutrition.proteinG}`);
+assert(nutrition.caloriesLow < nutrition.caloriesHigh, "calorie band should be ordered");
+
+console.log("workout-plan + split + readiness + nutrition checks passed");

@@ -94,6 +94,7 @@ export function JarvisOverview({ data }: { data: DashboardPayload }) {
           <TypeLine text={brief.recoveryLine} delay={700} />
           <TypeLine text={brief.intensityLine} delay={1600} />
           <TypeLine text={brief.liftLine} delay={2600} />
+          <TypeLine text={brief.weekLine} delay={3400} />
         </div>
 
         <div className="mt-6 grid gap-2 sm:grid-cols-3">
