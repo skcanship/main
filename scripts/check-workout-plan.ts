@@ -103,4 +103,47 @@ const nutrition = computeNutritionTargets(160);
 assert(nutrition.proteinG === 160, `expected 160g protein, got ${nutrition.proteinG}`);
 assert(nutrition.caloriesLow < nutrition.caloriesHigh, "calorie band should be ordered");
 
-console.log("workout-plan + split + readiness + nutrition checks passed");
+import { computeStrainBudget } from "../src/lib/strain-budget";
+import { verdictFromCheckIns } from "../src/lib/recomp-checkin";
+
+const budget = computeStrainBudget({
+  recoveryScore: 80,
+  currentStrain: 4,
+  splitDay: "Back & Bis + Cardio",
+  splitAction: "EXECUTE",
+  intensity: "Heavy",
+});
+assert(budget.targetMax >= 14, `expected high ceiling, got ${budget.targetMax}`);
+assert(budget.remaining != null && budget.remaining > 0, "should have remaining strain");
+assert(budget.cardioBudget > 0, "cardio day should allocate cardio budget");
+
+const legsBudget = computeStrainBudget({
+  recoveryScore: 70,
+  currentStrain: 2,
+  splitDay: "Legs + Core",
+  splitAction: "EXECUTE",
+  intensity: "Heavy",
+});
+assert(legsBudget.cardioBudget === 0, "no cardio budget on leg day");
+
+const verdict = verdictFromCheckIns([
+  {
+    id: "2",
+    date: "2026-07-17",
+    weightLbs: 159,
+    waistIn: 31.5,
+    energy: 4,
+    mood: 4,
+  },
+  {
+    id: "1",
+    date: "2026-07-10",
+    weightLbs: 160,
+    waistIn: 32.2,
+    energy: 3,
+    mood: 3,
+  },
+]);
+assert(verdict.code === "LEANING_OUT", `expected LEANING_OUT, got ${verdict.code}`);
+
+console.log("all shankofit checks passed");

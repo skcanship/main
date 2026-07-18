@@ -2,6 +2,7 @@ import type { CycleRecord, RecoveryRecord, SleepRecord, WorkoutRecord } from "@/
 import { recommendTrainingPlan, type TrainingPlan } from "@/lib/workout-plan";
 import { buildSplitAgenda, type SplitAgenda } from "@/lib/split-plan";
 import { computeWeeklyReadiness, type WeeklyReadiness } from "@/lib/weekly-readiness";
+import { computeStrainBudget, type StrainBudget } from "@/lib/strain-budget";
 
 export type TodaySummary = {
   recoveryScore: number | null;
@@ -42,6 +43,7 @@ export type DashboardPayload = {
   plan: TrainingPlan;
   split: SplitAgenda;
   weekly: WeeklyReadiness;
+  strainBudget: StrainBudget;
 };
 
 function msToHours(ms: number | undefined | null): number | null {
@@ -181,6 +183,13 @@ export function buildDashboardData(args: {
   });
 
   const weekly = computeWeeklyReadiness(trends);
+  const strainBudget = computeStrainBudget({
+    recoveryScore: today.recoveryScore,
+    currentStrain: today.strain,
+    splitDay: split.today.scheduled,
+    splitAction: split.today.action,
+    intensity: plan.intensity,
+  });
 
   return {
     connected: true,
@@ -205,5 +214,6 @@ export function buildDashboardData(args: {
     plan,
     split,
     weekly,
+    strainBudget,
   };
 }

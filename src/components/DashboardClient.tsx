@@ -15,6 +15,8 @@ import { JarvisOverview } from "@/components/JarvisOverview";
 import { WeeklyReadinessCard } from "@/components/WeeklyReadinessCard";
 import { NutritionCard } from "@/components/NutritionCard";
 import { LiftLogPanel } from "@/components/LiftLogPanel";
+import { StrainBudgetCard } from "@/components/StrainBudgetCard";
+import { RecompCheckInCard } from "@/components/RecompCheckInCard";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -61,6 +63,9 @@ export default function DashboardClient() {
             ) : null}
           </div>
           <div className="flex gap-2">
+            <a href="/morning" className="btn-ghost !py-2 !px-3">
+              Morning
+            </a>
             <button type="button" onClick={() => void load()} className="btn-ghost !py-2 !px-3">
               Refresh
             </button>
@@ -108,35 +113,47 @@ export default function DashboardClient() {
 
           <FlowSection index={2}>
             <FadeIn>
-              <WeeklyReadinessCard weekly={data.weekly} />
+              <StrainBudgetCard budget={data.strainBudget} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={3}>
             <FadeIn>
-              <NutritionCard />
+              <WeeklyReadinessCard weekly={data.weekly} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={4}>
             <FadeIn>
-              <LiftLogPanel />
+              <RecompCheckInCard />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={5}>
             <FadeIn>
-              <BodyMetricsPanel />
+              <NutritionCard />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={0}>
             <FadeIn>
-              <SplitCalendar split={data.split} />
+              <LiftLogPanel />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={1}>
+            <FadeIn>
+              <BodyMetricsPanel />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={2}>
+            <FadeIn>
+              <SplitCalendar split={data.split} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={3} id="session">
             <FadeIn>
               <TrainingPlanCard plan={data.plan} />
             </FadeIn>

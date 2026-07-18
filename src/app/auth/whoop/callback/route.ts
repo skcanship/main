@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       // Profile is optional — dashboard still works without it
     }
 
-    return NextResponse.redirect(`${origin}/dashboard`);
+    return NextResponse.redirect(`${origin}/morning`);
   } catch (err) {
     session.oauthState = undefined;
     await session.save();

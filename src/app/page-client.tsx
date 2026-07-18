@@ -20,7 +20,7 @@ export default function LandingClient() {
         const res = await fetch("/api/auth/status");
         const data = await res.json();
         if (!cancelled && data.connected) {
-          router.replace("/dashboard");
+          router.replace("/morning");
           return;
         }
       } catch {
