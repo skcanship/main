@@ -6,10 +6,10 @@ import type { DashboardPayload } from "@/lib/whoop/dashboard";
 import { buildJarvisBriefing, type JarvisBriefing } from "@/lib/jarvis-briefing";
 
 const verdictColor: Record<JarvisBriefing["verdict"], string> = {
-  GO: "#30d158",
-  MODERATE: "#5ac8fa",
-  LIGHT: "#ffd60a",
-  REST: "#ff453a",
+  GO: "#8C8D68",
+  MODERATE: "#A8A97E",
+  LIGHT: "#d4a017",
+  REST: "#c45c3a",
 };
 
 function TypeLine({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -24,7 +24,7 @@ function TypeLine({ text, delay = 0 }: { text: string; delay?: number }) {
         i += 1;
         setShown(text.slice(0, i));
         if (i >= text.length && intervalId != null) window.clearInterval(intervalId);
-      }, 12);
+      }, 14);
     }, delay);
     return () => {
       window.clearTimeout(start);
@@ -33,10 +33,10 @@ function TypeLine({ text, delay = 0 }: { text: string; delay?: number }) {
   }, [text, delay]);
 
   return (
-    <p className="text-sm leading-relaxed text-[var(--ink-muted)] sm:text-[15px]">
-      <span className="mr-2 text-[var(--accent)]">&#62;</span>
+    <p className="font-mono text-sm leading-relaxed text-[var(--ink-muted)] sm:text-[15px]">
+      <span className="mr-2 text-[var(--moss-bright)]">&#62;</span>
       <span className="text-[var(--ink)]">{shown}</span>
-      <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-[var(--accent)]" />
+      <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-[var(--moss)]" />
     </p>
   );
 }
@@ -46,13 +46,20 @@ export function JarvisOverview({ data }: { data: DashboardPayload }) {
   const accent = verdictColor[brief.verdict];
 
   return (
-    <div className="glass-dense relative p-5 sm:p-8">
+    <div className="glass-dense relative overflow-hidden p-5 sm:p-7">
+      <span className="pointer-events-none absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-[var(--moss)]" />
+      <span className="pointer-events-none absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-[var(--moss)]" />
+      <span className="pointer-events-none absolute bottom-2 left-2 h-4 w-4 border-b-2 border-l-2 border-[var(--moss)]" />
+      <span className="pointer-events-none absolute bottom-2 right-2 h-4 w-4 border-b-2 border-r-2 border-[var(--moss)]" />
+
       <div className="relative z-10">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="eyebrow">J.A.R.V.I.S. · Daily Briefing</p>
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--moss-bright)] uppercase">
+              J.A.R.V.I.S. // Daily Briefing
+            </p>
             <motion.h2
-              className="font-display mt-2 text-3xl tracking-tight sm:text-4xl"
+              className="font-display mt-2 text-3xl tracking-wide text-[var(--ink)] sm:text-4xl"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -62,40 +69,49 @@ export function JarvisOverview({ data }: { data: DashboardPayload }) {
           </div>
 
           <div
-            className="rounded-full px-3 py-2 text-center"
-            style={{ border: `1px solid ${accent}66`, background: `${accent}18` }}
+            className="border px-3 py-2 text-center"
+            style={{ borderColor: `${accent}66`, background: `${accent}14` }}
           >
-            <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--ink-muted)] uppercase">
+            <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--ink-muted)] uppercase">
               Status
             </p>
-            <p className="mt-0.5 text-xs font-bold tracking-wider" style={{ color: accent }}>
+            <p className="font-mono mt-1 text-sm font-semibold tracking-wider" style={{ color: accent }}>
               {brief.statusLabel}
             </p>
           </div>
         </div>
 
-        <div className="mt-5 space-y-3 border-t border-white/10 pt-5">
-          <TypeLine text={brief.greeting} delay={80} />
-          <TypeLine text={brief.recoveryLine} delay={600} />
-          <TypeLine text={brief.intensityLine} delay={1400} />
-          <TypeLine text={brief.liftLine} delay={2300} />
-          <TypeLine text={brief.weekLine} delay={3000} />
+        <div className="mt-5 space-y-3 border-t border-[var(--line)] pt-5">
+          <TypeLine text={brief.greeting} delay={100} />
+          <TypeLine text={brief.recoveryLine} delay={700} />
+          <TypeLine text={brief.intensityLine} delay={1600} />
+          <TypeLine text={brief.liftLine} delay={2600} />
+          <TypeLine text={brief.weekLine} delay={3400} />
         </div>
 
         <div className="mt-6 grid gap-2 sm:grid-cols-3">
-          {[
-            { label: "Recovery", value: data.today.recoveryScore ?? "—" },
-            { label: "Intensity", value: data.plan.intensity },
-            { label: "Lift", value: data.split.today.scheduled },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-white/10 bg-black/30 px-3 py-3"
-            >
-              <p className="eyebrow text-[var(--ink-muted)]">{item.label}</p>
-              <p className="metric-num mt-1 text-xl tracking-tight">{item.value}</p>
-            </div>
-          ))}
+          <div className="border border-[var(--line)] bg-[rgba(90,44,7,0.25)] px-3 py-2.5">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--ink-muted)] uppercase">
+              Recovery
+            </p>
+            <p className="font-mono mt-1 text-2xl text-[var(--ink)]">
+              {data.today.recoveryScore ?? "—"}
+            </p>
+          </div>
+          <div className="border border-[var(--line)] bg-[rgba(90,44,7,0.25)] px-3 py-2.5">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--ink-muted)] uppercase">
+              Intensity
+            </p>
+            <p className="font-mono mt-1 text-lg text-[var(--ink)]">{data.plan.intensity}</p>
+          </div>
+          <div className="border border-[var(--line)] bg-[rgba(90,44,7,0.25)] px-3 py-2.5">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--ink-muted)] uppercase">
+              Lift
+            </p>
+            <p className="font-mono mt-1 text-sm leading-snug text-[var(--ink)]">
+              {data.split.today.scheduled}
+            </p>
+          </div>
         </div>
       </div>
     </div>

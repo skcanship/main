@@ -1,9 +1,9 @@
 import type { WeeklyReadiness } from "@/lib/weekly-readiness";
 
 const modeColor: Record<WeeklyReadiness["mode"], string> = {
-  PUSH: "var(--good)",
-  MAINTAIN: "var(--accent)",
-  DELOAD: "var(--bad)",
+  PUSH: "#8C8D68",
+  MAINTAIN: "#A8A97E",
+  DELOAD: "#c45c3a",
 };
 
 export function WeeklyReadinessCard({ weekly }: { weekly: WeeklyReadiness }) {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import type { DashboardPayload } from "@/lib/whoop/dashboard";
 import { buildJarvisBriefing } from "@/lib/jarvis-briefing";
 import { computeNutritionTargets } from "@/lib/nutrition";
@@ -10,7 +10,6 @@ import { loadBodyState } from "@/lib/body-metrics";
 import { StrainBudgetCard } from "@/components/StrainBudgetCard";
 import { RecompCheckInCard } from "@/components/RecompCheckInCard";
 import { isCheckInDue, loadCheckIns } from "@/lib/recomp-checkin";
-import { CountUp } from "@/components/CountUp";
 
 export default function MorningCommandClient() {
   const router = useRouter();
@@ -48,145 +47,110 @@ export default function MorningCommandClient() {
 
   if (loading) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
-        <div className="aurora-orb h-80 w-80 bg-[rgba(90,200,250,0.2)]" />
-        <m.p
-          className="relative z-10 text-sm font-semibold tracking-[0.28em] text-[var(--accent)] uppercase"
-          animate={{ opacity: [0.35, 1, 0.35] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+      <main className="flex min-h-screen items-center justify-center bg-[#050505]">
+        <motion.p
+          className="text-sm tracking-[0.25em] text-[var(--accent)] uppercase"
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
         >
-          Morning systems online
-        </m.p>
+          Morning systems online…
+        </motion.p>
       </main>
     );
   }
 
   if (!data) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-black px-6">
+      <main className="flex min-h-screen items-center justify-center bg-[#050505] px-6">
         <p className="text-[var(--bad)]">{error || "Unable to load morning command"}</p>
       </main>
     );
   }
 
   const brief = buildJarvisBriefing(data);
-  const statusColor =
-    brief.verdict === "GO" ? "#30d158" : brief.verdict === "REST" ? "#ff453a" : "#5ac8fa";
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black">
+    <main className="relative min-h-screen overflow-hidden bg-[#0c0805]">
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 70% 50% at 50% -10%, rgba(90,200,250,0.2), transparent 55%), radial-gradient(ellipse 40% 35% at 90% 80%, rgba(48,209,88,0.1), transparent 50%), #000",
+            "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(90,44,7,0.45), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(140,141,104,0.14), transparent 50%), linear-gradient(160deg, #140c07, #0c0805 55%)",
         }}
       />
-      <div className="aurora-orb -left-10 top-24 h-72 w-72 bg-[rgba(90,200,250,0.18)]" />
-      <div className="aurora-orb -right-8 bottom-20 h-64 w-64 bg-[rgba(191,90,242,0.12)]" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-5 sm:px-8">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-6 sm:px-8">
         <header className="flex items-center justify-between gap-3">
-          <p className="font-display text-[15px] tracking-tight">ShankoFIT</p>
-          <a href="/dashboard" className="btn-ghost !py-2 !px-4 text-xs">
-            Command center
+          <p className="font-display text-sm tracking-[0.28em]">ShankoFIT</p>
+          <a href="/dashboard" className="btn-ghost !py-2 !px-3">
+            Full dashboard
           </a>
         </header>
 
-        <div className="mt-5 flex flex-1 flex-col justify-center gap-3.5 pb-8">
-          <m.div
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-dense p-6 sm:p-7"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="eyebrow">Morning Command</p>
-                <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
-                  Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}
-                  {data.user ? `, ${data.user.firstName}` : ""}
-                </h1>
-              </div>
-              <span
-                className="rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.16em] uppercase"
-                style={{
-                  color: statusColor,
-                  background: `${statusColor}22`,
-                  border: `1px solid ${statusColor}55`,
-                }}
-              >
-                {brief.statusLabel}
-              </span>
-            </div>
-            <div className="mt-5 space-y-2.5 border-t border-white/10 pt-5 text-[13px] leading-relaxed text-[var(--ink-muted)] sm:text-sm">
-              <p>{brief.recoveryLine}</p>
-              <p>{brief.intensityLine}</p>
-              <p className="font-display text-xl tracking-tight text-[var(--ink)] sm:text-2xl">
-                {brief.liftLine}
-              </p>
-              <p className="text-xs text-[var(--accent)]">{brief.weekLine}</p>
-            </div>
-          </m.div>
-
-          <m.div
-            className="grid gap-3 sm:grid-cols-2"
+        <div className="mt-6 flex flex-1 flex-col justify-center gap-4 pb-8">
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.65 }}
+            className="glass-dense border border-[var(--moss)]/40 p-5"
           >
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--moss-bright)] uppercase">
+              Morning Command
+            </p>
+            <p className="font-mono mt-3 text-sm text-[var(--ink-muted)]">{brief.greeting}</p>
+            <p className="font-mono mt-2 text-sm text-[var(--ink-muted)]">{brief.recoveryLine}</p>
+            <p className="font-mono mt-2 text-sm text-[var(--ink-muted)]">{brief.intensityLine}</p>
+            <p className="mt-4 font-display text-2xl text-[var(--ink)] sm:text-3xl">{brief.liftLine}</p>
+            <p className="font-mono mt-2 text-xs text-[var(--moss-bright)]">{brief.weekLine}</p>
+            <p
+              className="font-mono mt-4 inline-block border px-2 py-1 text-xs tracking-wider"
+              style={{
+                borderColor:
+                  brief.verdict === "GO"
+                    ? "#8C8D6866"
+                    : brief.verdict === "REST"
+                      ? "#c45c3a66"
+                      : "#A8A97E66",
+                color:
+                  brief.verdict === "GO"
+                    ? "#8C8D68"
+                    : brief.verdict === "REST"
+                      ? "#c45c3a"
+                      : "#A8A97E",
+              }}
+            >
+              {brief.statusLabel}
+            </p>
+          </motion.div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="glass-dense p-5">
               <p className="eyebrow">Today&apos;s lift</p>
-              <p className="font-display mt-2 text-2xl leading-tight tracking-tight">
-                {data.split.today.scheduled}
-              </p>
+              <p className="font-display mt-2 text-2xl leading-tight">{data.split.today.scheduled}</p>
               <p className="mt-2 text-sm text-[var(--ink-muted)]">{data.plan.focus}</p>
-              <p className="mt-3 text-xs font-semibold tracking-wide text-[var(--accent)] uppercase">
-                {data.plan.intensity}
+              <p className="mt-3 text-xs tracking-wide text-[var(--accent)] uppercase">
+                Intensity · {data.plan.intensity}
               </p>
             </div>
             <div className="glass-dense p-5">
-              <p className="eyebrow">Protein</p>
-              <p className="metric-num mt-2 text-5xl text-[var(--accent)]">
-                <CountUp value={proteinG} />
-                <span className="text-xl text-[var(--ink-muted)]">g</span>
-              </p>
-              <p className="mt-2 text-sm text-[var(--ink-muted)]">Hit before midnight.</p>
+              <p className="eyebrow">Protein target</p>
+              <p className="metric-num mt-2 text-5xl text-[var(--accent)]">{proteinG}g</p>
+              <p className="mt-2 text-sm text-[var(--ink-muted)]">Hit this before midnight. Recomp fuel.</p>
             </div>
-          </m.div>
+          </div>
 
-          <m.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.65 }}
-          >
-            <StrainBudgetCard budget={data.strainBudget} />
-          </m.div>
+          <StrainBudgetCard budget={data.strainBudget} />
 
-          {checkInDue ? (
-            <m.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.26, duration: 0.65 }}
-            >
-              <RecompCheckInCard compact />
-            </m.div>
-          ) : null}
+          {checkInDue ? <RecompCheckInCard compact /> : null}
 
-          <m.div
-            className="flex flex-wrap gap-3 pt-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.32 }}
-          >
+          <div className="flex flex-wrap gap-3 pt-1">
             <a href="/dashboard#session" className="btn-primary">
               Go · start session
             </a>
             <a href="/dashboard" className="btn-ghost">
-              Open insights
+              Open command center
             </a>
-          </m.div>
+          </div>
         </div>
       </div>
     </main>

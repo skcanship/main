@@ -96,8 +96,8 @@ export function BodyMetricsPanel() {
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="weightFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#c2a878" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#c2a878" stopOpacity={0} />
+                <stop offset="0%" stopColor="#8C8D68" stopOpacity={0.45} />
+                <stop offset="100%" stopColor="#5A2C07" stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <XAxis dataKey="date" stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 11 }} />
@@ -114,7 +114,7 @@ export function BodyMetricsPanel() {
                 borderRadius: 0,
               }}
             />
-            <Area type="monotone" dataKey="weight" stroke="#c2a878" fill="url(#weightFill)" strokeWidth={1.5} />
+            <Area type="monotone" dataKey="weight" stroke="#8C8D68" fill="url(#weightFill)" strokeWidth={1.5} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

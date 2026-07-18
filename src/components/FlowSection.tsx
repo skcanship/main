@@ -1,15 +1,16 @@
 "use client";
 
-import { m, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef, type ReactNode } from "react";
 
 const BACKGROUNDS = [
-  "radial-gradient(ellipse 70% 55% at 20% 20%, rgba(90,200,250,0.22), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(48,209,88,0.1), transparent 50%), linear-gradient(160deg, #0a0a10, #000 60%)",
-  "radial-gradient(ellipse 60% 50% at 80% 15%, rgba(191,90,242,0.16), transparent 50%), radial-gradient(ellipse 50% 40% at 10% 80%, rgba(90,200,250,0.12), transparent 50%), linear-gradient(180deg, #08080c, #000 70%)",
-  "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(48,209,88,0.14), transparent 55%), linear-gradient(145deg, #0c0c12, #000 65%)",
-  "radial-gradient(ellipse 55% 45% at 0% 40%, rgba(90,200,250,0.2), transparent 50%), linear-gradient(120deg, #101018, #000 60%)",
-  "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.07), transparent 40%), radial-gradient(ellipse at 70% 60%, rgba(255,159,10,0.08), transparent 45%), linear-gradient(200deg, #0a0a0e, #000)",
-  "radial-gradient(ellipse 60% 40% at 60% 30%, rgba(90,200,250,0.14), transparent 50%), radial-gradient(ellipse 40% 30% at 20% 70%, rgba(191,90,242,0.1), transparent 45%), #000",
+  // seal + moss
+  "radial-gradient(ellipse 80% 60% at 20% 30%, rgba(90,44,7,0.45), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(140,141,104,0.16), transparent 50%), linear-gradient(135deg, #1a0e05 0%, #0c0805 50%, #120a05 100%)",
+  "radial-gradient(ellipse 70% 50% at 80% 20%, rgba(140,141,104,0.2), transparent 50%), linear-gradient(160deg, #140c07 0%, #0c0805 45%, #1a1008 100%)",
+  "radial-gradient(ellipse 90% 70% at 50% 100%, rgba(90,44,7,0.4), transparent 55%), linear-gradient(180deg, #120a05 0%, #0c0805 55%, #16100a 100%)",
+  "linear-gradient(105deg, rgba(140,141,104,0.18) 0%, transparent 35%), radial-gradient(ellipse at 0% 50%, #2a1a0c 0%, #0c0805 60%)",
+  "radial-gradient(circle at 50% 0%, rgba(140,141,104,0.12), transparent 40%), linear-gradient(200deg, #1a1008 0%, #0c0805 55%, #120a05 100%)",
+  "radial-gradient(ellipse 60% 40% at 70% 60%, rgba(90,44,7,0.35), transparent 50%), linear-gradient(145deg, #140c07 0%, #0c0805 100%)",
 ];
 
 export function FlowSection({
@@ -28,35 +29,37 @@ export function FlowSection({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [0.4, 1, 1, 0.55]);
-  const contentY = useTransform(scrollYProgress, [0, 0.3, 1], [48, 0, -16]);
-  const scale = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0.97, 1, 1, 0.985]);
+  const y = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.55, 1, 1, 0.65]);
+  const contentY = useTransform(scrollYProgress, [0, 0.35, 1], [40, 0, -20]);
   const bg = BACKGROUNDS[index % BACKGROUNDS.length];
 
   return (
-    <section ref={ref} id={id} className={`relative min-h-[88vh] overflow-hidden ${className}`}>
-      <m.div
+    <section ref={ref} id={id} className={`relative min-h-[85vh] overflow-hidden ${className}`}>
+      <motion.div
         aria-hidden
         className="absolute inset-0 scale-110"
-        style={{ y, backgroundImage: bg, backgroundSize: "cover" }}
+        style={{
+          y,
+          backgroundImage: `${bg}, url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+          backgroundSize: "cover, 180px 180px",
+        }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-40"
         style={{
           backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.05) 0.5px, transparent 0.5px)",
-          backgroundSize: "3px 3px",
-          maskImage: "linear-gradient(to bottom, black, transparent 90%)",
+            "linear-gradient(rgba(247,244,239,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(247,244,239,0.03) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
         }}
       />
-      <m.div
-        className="relative z-10 mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-center px-5 py-16 sm:px-8"
-        style={{ opacity, y: contentY, scale }}
+      <motion.div
+        className="relative z-10 mx-auto flex min-h-[85vh] max-w-6xl flex-col justify-center px-5 py-14 sm:px-8"
+        style={{ opacity, y: contentY }}
       >
         {children}
-      </m.div>
+      </motion.div>
     </section>
   );
 }
@@ -71,14 +74,18 @@ export function FadeIn({
   className?: string;
 }) {
   return (
-    <m.div
+    <motion.div
       className={className}
-      initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, margin: "-12%" }}
-      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
-    </m.div>
+    </motion.div>
   );
+}
+
+export function useParallax(value: MotionValue<number>, distance: number) {
+  return useTransform(value, [0, 1], [-distance, distance]);
 }

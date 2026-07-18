@@ -53,23 +53,23 @@ export default function DashboardClient() {
   }
 
   return (
-    <main className="overflow-x-hidden bg-black">
-      <header className="nav-blur sticky top-0 z-50">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
+    <main className="overflow-x-hidden bg-[#0c0805]">
+      <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(5,5,5,0.75)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
           <div>
-            <p className="font-display text-[15px] tracking-tight">ShankoFIT</p>
+            <p className="font-display text-sm tracking-[0.28em]">ShankoFIT</p>
             {data?.user ? (
               <p className="text-xs text-[var(--ink-muted)]">{data.user.firstName}</p>
             ) : null}
           </div>
           <div className="flex gap-2">
-            <a href="/morning" className="btn-ghost !py-2 !px-3 text-xs">
+            <a href="/morning" className="btn-ghost !py-2 !px-3">
               Morning
             </a>
-            <button type="button" onClick={() => void load()} className="btn-ghost !py-2 !px-3 text-xs">
+            <button type="button" onClick={() => void load()} className="btn-ghost !py-2 !px-3">
               Refresh
             </button>
-            <button type="button" onClick={() => void logout()} className="btn-ghost !py-2 !px-3 text-xs">
+            <button type="button" onClick={() => void logout()} className="btn-ghost !py-2 !px-3">
               Disconnect
             </button>
           </div>
@@ -77,14 +77,13 @@ export default function DashboardClient() {
       </header>
 
       {loading ? (
-        <div className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
-          <div className="aurora-orb h-72 w-72 bg-[rgba(90,200,250,0.18)]" />
+        <div className="flex min-h-[60vh] items-center justify-center">
           <motion.p
-            className="relative z-10 text-sm font-semibold tracking-[0.24em] text-[var(--accent)] uppercase"
-            animate={{ opacity: [0.35, 1, 0.35] }}
+            className="text-sm tracking-[0.2em] text-[var(--accent)] uppercase"
+            animate={{ opacity: [0.4, 1, 0.4] }}
             transition={{ duration: 1.6, repeat: Infinity }}
           >
-            Syncing insights…
+            Syncing ShankoFIT…
           </motion.p>
         </div>
       ) : null}
