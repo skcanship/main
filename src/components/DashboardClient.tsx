@@ -11,6 +11,7 @@ import { WorkoutsList } from "@/components/WorkoutsList";
 import { BodyMetricsPanel } from "@/components/BodyMetricsPanel";
 import { SplitCalendar } from "@/components/SplitCalendar";
 import { FlowSection, FadeIn } from "@/components/FlowSection";
+import { JarvisOverview } from "@/components/JarvisOverview";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -92,29 +93,35 @@ export default function DashboardClient() {
         <>
           <FlowSection index={0}>
             <FadeIn>
-              <TodayCard today={data.today} />
+              <JarvisOverview data={data} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={1}>
             <FadeIn>
-              <BodyMetricsPanel />
+              <TodayCard today={data.today} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={2}>
             <FadeIn>
-              <SplitCalendar split={data.split} />
+              <BodyMetricsPanel />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={3}>
             <FadeIn>
-              <TrainingPlanCard plan={data.plan} />
+              <SplitCalendar split={data.split} />
             </FadeIn>
           </FlowSection>
 
           <FlowSection index={4}>
+            <FadeIn>
+              <TrainingPlanCard plan={data.plan} />
+            </FadeIn>
+          </FlowSection>
+
+          <FlowSection index={5}>
             <FadeIn>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="glass-dense p-6">
@@ -145,13 +152,13 @@ export default function DashboardClient() {
             </FadeIn>
           </FlowSection>
 
-          <FlowSection index={5}>
+          <FlowSection index={0}>
             <FadeIn>
               <TrendsChart trends={data.trends} />
             </FadeIn>
           </FlowSection>
 
-          <FlowSection index={0}>
+          <FlowSection index={1}>
             <FadeIn>
               <WorkoutsList workouts={data.workouts} />
             </FadeIn>

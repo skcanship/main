@@ -17,6 +17,11 @@
 
   --font-display: "Oswald", sans-serif;
   --font-body: "Manrope", sans-serif;
+  --font-mono: "ui-monospace", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
 }
 
 * {
