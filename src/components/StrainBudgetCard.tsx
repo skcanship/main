@@ -1,10 +1,10 @@
 import type { StrainBudget } from "@/lib/strain-budget";
 
 const statusColor: Record<StrainBudget["status"], string> = {
-  PLENTY: "var(--good)",
-  MODERATE: "var(--accent)",
-  LOW: "var(--warn)",
-  OVER: "var(--bad)",
+  PLENTY: "#30d158",
+  MODERATE: "#5ac8fa",
+  LOW: "#ffd60a",
+  OVER: "#ff453a",
 };
 
 export function StrainBudgetCard({ budget }: { budget: StrainBudget }) {
