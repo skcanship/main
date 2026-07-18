@@ -174,3 +174,40 @@ input {
 .animate-kenburns {
   animation: kenburns 20s ease-out forwards;
 }
+
+/* Dense command panel — shrink tall card chrome inside tabs */
+.panel-dense .glass-dense {
+  padding: 0.85rem 1rem !important;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.panel-dense h2.font-display {
+  font-size: 1.35rem !important;
+  margin-top: 0.25rem !important;
+}
+
+.panel-dense .eyebrow + h2.font-display,
+.panel-dense p.eyebrow + h2 {
+  font-size: 1.35rem !important;
+}
+
+.panel-dense .mt-8 {
+  margin-top: 0.75rem !important;
+}
+
+.panel-dense .mt-6 {
+  margin-top: 0.75rem !important;
+}
+
+.panel-dense .h-64 {
+  height: 12rem !important;
+}
+
+@media (min-width: 640px) {
+  .panel-dense .sm\:h-72 {
+    height: 12rem !important;
+  }
+}
