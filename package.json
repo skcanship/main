@@ -1,5 +1,5 @@
 {
-  "name": "whoop-health-dashboard",
+  "name": "shankofit",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "check:plan": "tsx scripts/check-workout-plan.ts"
   },
   "dependencies": {
+    "framer-motion": "^12.42.2",
     "iron-session": "^8.0.4",
     "next": "^15.3.3",
     "react": "^19.1.0",

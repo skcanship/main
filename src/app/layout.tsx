@@ -1,33 +1,33 @@
 import type { Metadata } from "next";
-import { DM_Sans, Syne } from "next/font/google";
+import { Manrope, Oswald } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
+const oswald = Oswald({
   subsets: ["latin"],
-  variable: "--font-syne",
+  variable: "--font-oswald",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-manrope",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "PulsePlan — WHOOP Health Dashboard",
+  title: "ShankoFIT",
   description:
-    "Connect WHOOP via OAuth and get recovery, sleep, strain insights plus training recommendations for muscle gain and fat loss.",
+    "ShankoFIT — a dynamic WHOOP-powered performance experience for recovery, training, and body metrics.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${oswald.variable} ${manrope.variable}`}>
       <body
         style={
           {
-            ["--font-display" as string]: "var(--font-syne), sans-serif",
-            ["--font-body" as string]: "var(--font-dm-sans), sans-serif",
+            ["--font-display" as string]: "var(--font-oswald), sans-serif",
+            ["--font-body" as string]: "var(--font-manrope), sans-serif",
           } as React.CSSProperties
         }
       >

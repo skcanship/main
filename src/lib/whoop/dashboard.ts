@@ -1,5 +1,8 @@
 import type { CycleRecord, RecoveryRecord, SleepRecord, WorkoutRecord } from "@/lib/whoop/types";
 import { recommendTrainingPlan, type TrainingPlan } from "@/lib/workout-plan";
+import { buildSplitAgenda, type SplitAgenda } from "@/lib/split-plan";
+import { computeWeeklyReadiness, type WeeklyReadiness } from "@/lib/weekly-readiness";
+import { computeStrainBudget, type StrainBudget } from "@/lib/strain-budget";
 
 export type TodaySummary = {
   recoveryScore: number | null;
@@ -38,6 +41,9 @@ export type DashboardPayload = {
     durationMin: number | null;
   }>;
   plan: TrainingPlan;
+  split: SplitAgenda;
+  weekly: WeeklyReadiness;
+  strainBudget: StrainBudget;
 };
 
 function msToHours(ms: number | undefined | null): number | null {
@@ -87,14 +93,9 @@ export function buildDashboardData(args: {
     sleepDurationHours: latestSleep ? sleepDurationHours(latestSleep) : null,
     sleepPerformance: latestSleep?.score?.sleep_performance_percentage ?? null,
     strain: latestCycle?.score?.strain != null ? Math.round(latestCycle.score.strain * 10) / 10 : null,
-    dateLabel: latestRecovery?.created_at
-      ? dayKey(latestRecovery.created_at)
-      : latestCycle?.start
-        ? dayKey(latestCycle.start)
-        : new Date().toISOString().slice(0, 10),
+    dateLabel: new Date().toISOString().slice(0, 10),
   };
 
-  // Build 7–30 day trends keyed by date
   const recoveryByDay = new Map<string, number>();
   for (const r of scoredRecoveries) {
     const key = dayKey(r.created_at);
@@ -102,15 +103,19 @@ export function buildDashboardData(args: {
       recoveryByDay.set(key, r.score.recovery_score);
     }
   }
+  if (today.recoveryScore != null && !recoveryByDay.has(today.dateLabel)) {
+    recoveryByDay.set(today.dateLabel, today.recoveryScore);
+  }
 
   const sleepByDay = new Map<string, { hours: number | null; performance: number | null }>();
+  const sleepPerfByDate = new Map<string, number>();
   for (const s of mainSleeps) {
     const key = dayKey(s.end || s.start);
     if (!sleepByDay.has(key)) {
-      sleepByDay.set(key, {
-        hours: sleepDurationHours(s),
-        performance: s.score?.sleep_performance_percentage ?? null,
-      });
+      const hours = sleepDurationHours(s);
+      const performance = s.score?.sleep_performance_percentage ?? null;
+      sleepByDay.set(key, { hours, performance });
+      if (performance != null) sleepPerfByDate.set(key, performance);
     }
   }
 
@@ -120,6 +125,17 @@ export function buildDashboardData(args: {
     if (!strainByDay.has(key) && c.score) {
       strainByDay.set(key, Math.round(c.score.strain * 10) / 10);
     }
+  }
+
+  const workoutsByDate = new Map<string, Array<{ sport: string; strain: number | null }>>();
+  for (const w of workouts) {
+    const key = dayKey(w.start);
+    const list = workoutsByDate.get(key) ?? [];
+    list.push({
+      sport: w.sport_name || "Workout",
+      strain: w.score?.strain != null ? Math.round(w.score.strain * 10) / 10 : null,
+    });
+    workoutsByDate.set(key, list);
   }
 
   const allDays = new Set([...recoveryByDay.keys(), ...sleepByDay.keys(), ...strainByDay.keys()]);
@@ -144,6 +160,16 @@ export function buildDashboardData(args: {
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const workoutsLast7d = workouts.filter((w) => new Date(w.start).getTime() >= sevenDaysAgo).length;
 
+  const split = buildSplitAgenda({
+    todayIso: today.dateLabel,
+    recoveriesByDate: recoveryByDay,
+    sleepPerfByDate,
+    strainByDate: strainByDay,
+    workoutsByDate,
+    pastDays: 7,
+    futureDays: 7,
+  });
+
   const plan = recommendTrainingPlan({
     recoveryScore: today.recoveryScore,
     sleepPerformance: today.sleepPerformance,
@@ -152,6 +178,17 @@ export function buildDashboardData(args: {
     avgStrain7d,
     workoutsLast7d,
     goal: "muscle gain + fat loss",
+    splitDay: split.today.scheduled,
+    splitAction: split.today.action,
+  });
+
+  const weekly = computeWeeklyReadiness(trends);
+  const strainBudget = computeStrainBudget({
+    recoveryScore: today.recoveryScore,
+    currentStrain: today.strain,
+    splitDay: split.today.scheduled,
+    splitAction: split.today.action,
+    intensity: plan.intensity,
   });
 
   return {
@@ -161,7 +198,7 @@ export function buildDashboardData(args: {
       : null,
     today,
     trends,
-    workouts: workouts.slice(0, 10).map((w) => {
+    workouts: workouts.slice(0, 12).map((w) => {
       const durationMs =
         w.start && w.end ? new Date(w.end).getTime() - new Date(w.start).getTime() : null;
       return {
@@ -175,5 +212,8 @@ export function buildDashboardData(args: {
       };
     }),
     plan,
+    split,
+    weekly,
+    strainBudget,
   };
 }

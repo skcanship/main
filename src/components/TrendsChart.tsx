@@ -15,70 +15,44 @@ import type { TrendPoint } from "@/lib/whoop/dashboard";
 export function TrendsChart({ trends }: { trends: TrendPoint[] }) {
   const data = trends.map((t) => ({
     ...t,
-    label: t.date.slice(5), // MM-DD
+    label: t.date.slice(5),
   }));
 
   if (data.length === 0) {
     return (
-      <section className="border border-[var(--line)] bg-[var(--bg-elevated)]/70 p-6 sm:p-8">
-        <h2 className="font-display text-2xl font-semibold">Last 7–30 days</h2>
-        <p className="mt-3 text-[var(--ink-muted)]">No trend data yet. Wear your WHOOP and check back.</p>
-      </section>
+      <div className="glass-dense p-6 sm:p-8">
+        <p className="eyebrow">Trends</p>
+        <h2 className="font-display mt-2 text-4xl">History</h2>
+        <p className="mt-3 text-[var(--ink-muted)]">No trend data yet.</p>
+      </div>
     );
   }
 
   return (
-    <section className="animate-rise-delay-1 border border-[var(--line)] bg-[var(--bg-elevated)]/70 p-6 sm:p-8">
-      <h2 className="font-display text-2xl font-semibold">Last 7–30 days</h2>
-      <p className="mt-1 text-sm text-[var(--ink-muted)]">
-        Recovery, sleep hours, and daily strain trends from your WHOOP cycles.
-      </p>
-
-      <div className="mt-6 h-72 w-full">
+    <div className="glass-dense p-6 sm:p-8">
+      <p className="eyebrow">Trends</p>
+      <h2 className="font-display mt-2 text-4xl">Last 7–30 Days</h2>
+      <div className="mt-6 h-64 w-full sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <CartesianGrid stroke="rgba(232,240,236,0.08)" vertical={false} />
-            <XAxis dataKey="label" stroke="#8fa89c" tick={{ fill: "#8fa89c", fontSize: 12 }} />
-            <YAxis stroke="#8fa89c" tick={{ fill: "#8fa89c", fontSize: 12 }} width={36} />
+            <CartesianGrid stroke="rgba(247,244,239,0.06)" vertical={false} />
+            <XAxis dataKey="label" stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 12 }} />
+            <YAxis stroke="#6b6661" tick={{ fill: "#a8a29a", fontSize: 12 }} width={36} />
             <Tooltip
               contentStyle={{
-                background: "#12201c",
-                border: "1px solid rgba(232,240,236,0.12)",
-                borderRadius: 4,
+                background: "#121212",
+                border: "1px solid rgba(247,244,239,0.12)",
+                borderRadius: 0,
               }}
-              labelStyle={{ color: "#e8f0ec" }}
+              labelStyle={{ color: "#f7f4ef" }}
             />
             <Legend />
-            <Line
-              type="monotone"
-              dataKey="recovery"
-              name="Recovery"
-              stroke="#3dffa8"
-              strokeWidth={2}
-              dot={false}
-              connectNulls
-            />
-            <Line
-              type="monotone"
-              dataKey="sleepHours"
-              name="Sleep (h)"
-              stroke="#7eb6ff"
-              strokeWidth={2}
-              dot={false}
-              connectNulls
-            />
-            <Line
-              type="monotone"
-              dataKey="strain"
-              name="Strain"
-              stroke="#f0c35a"
-              strokeWidth={2}
-              dot={false}
-              connectNulls
-            />
+            <Line type="monotone" dataKey="recovery" name="Recovery" stroke="#8C8D68" strokeWidth={1.5} dot={false} connectNulls />
+            <Line type="monotone" dataKey="sleepHours" name="Sleep (h)" stroke="#A8A97E" strokeWidth={1.5} dot={false} connectNulls />
+            <Line type="monotone" dataKey="strain" name="Strain" stroke="#5A2C07" strokeWidth={1.5} dot={false} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </section>
+    </div>
   );
 }

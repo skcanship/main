@@ -1,9 +1,9 @@
 /**
- * Workout plan recommendation for the goal: muscle gain + fat loss.
- *
- * Uses recent recovery, sleep, strain, and workout frequency to pick a
- * day type and example exercises (compound lifts + accessories).
+ * ShankoFIT — session prescription tied to the user's split
+ * and WHOOP recovery-aware deviation actions.
  */
+
+import { isStretchDay, type SplitAction, type SplitDay } from "@/lib/split-plan";
 
 export type DayType =
   | "Heavy strength"
@@ -24,6 +24,7 @@ export type Exercise = {
 export type TrainingPlan = {
   intensity: IntensityLabel;
   dayType: DayType;
+  splitDay: SplitDay;
   rationale: string;
   focus: string;
   exercises: Exercise[];
@@ -38,6 +39,86 @@ export type PlanInputs = {
   avgStrain7d: number | null;
   workoutsLast7d: number;
   goal?: "muscle gain + fat loss";
+  splitDay: SplitDay;
+  splitAction: SplitAction;
+};
+
+const CARDIO_FINISHER: Exercise = {
+  name: "Zone 2 Cardio (Bike / Incline Walk / Easy Jog)",
+  sets: 1,
+  reps: "25–35 min",
+  notes: "Conversational pace — after lifts",
+};
+
+const SPLIT_SESSIONS: Record<SplitDay, { focus: string; exercises: Exercise[]; tips: string[] }> = {
+  "Back & Bis + Cardio": {
+    focus: "Pull strength + arms, then Zone 2 cardio",
+    exercises: [
+      { name: "Weighted Pull-Ups or Lat Pulldown", sets: 4, reps: "6–8" },
+      { name: "Barbell or Chest-Supported Row", sets: 4, reps: "6–8" },
+      { name: "Seated Cable Row", sets: 3, reps: "8–12" },
+      { name: "Face Pulls", sets: 3, reps: "12–15" },
+      { name: "EZ-Bar Curl", sets: 3, reps: "8–12" },
+      { name: "Incline Dumbbell Curl", sets: 2, reps: "10–12" },
+      CARDIO_FINISHER,
+    ],
+    tips: [
+      "Drive elbows, full stretch on rows",
+      "Keep biceps work strict — no swing",
+      "Cardio after lifting, keep it Zone 2",
+    ],
+  },
+  "Chest / Shoulders / Tris + Cardio": {
+    focus: "Press strength + shoulders, then Zone 2 cardio",
+    exercises: [
+      { name: "Barbell or Dumbbell Bench Press", sets: 4, reps: "5–8" },
+      { name: "Incline Dumbbell Press", sets: 3, reps: "8–10" },
+      { name: "Overhead Press", sets: 3, reps: "6–8" },
+      { name: "Lateral Raises", sets: 3, reps: "12–15" },
+      { name: "Cable Tricep Pushdown", sets: 3, reps: "10–12" },
+      { name: "Overhead Tricep Extension", sets: 2, reps: "10–12" },
+      CARDIO_FINISHER,
+    ],
+    tips: [
+      "Leave 1–2 reps in reserve on heavy presses",
+      "Control the eccentric on laterals",
+      "Cardio after pressing — legs get tomorrow’s focus soon",
+    ],
+  },
+  "Legs + Core": {
+    focus: "Lower-body strength + trunk stability (no separate cardio finisher)",
+    exercises: [
+      { name: "Back Squat or Front Squat", sets: 4, reps: "5–8" },
+      { name: "Romanian Deadlift", sets: 3, reps: "6–8" },
+      { name: "Walking Lunges", sets: 3, reps: "8/leg" },
+      { name: "Leg Press or Hack Squat", sets: 3, reps: "8–12" },
+      { name: "Calf Raises", sets: 3, reps: "10–15" },
+      { name: "Hanging Knee Raises", sets: 3, reps: "10–15" },
+      { name: "Cable Woodchoppers", sets: 3, reps: "10/side" },
+      { name: "Plank", sets: 3, reps: "40–60s" },
+    ],
+    tips: [
+      "Brace hard — protect the spine",
+      "Core after legs while the trunk is primed",
+      "No cardio today — tomorrow is Stretch / Mobility (no cardio after legs)",
+    ],
+  },
+  "Stretch / Mobility": {
+    focus: "Recovery mobility — no hard training, no cardio",
+    exercises: [
+      { name: "90/90 Hip Flow", sets: 2, reps: "8/side" },
+      { name: "World’s Greatest Stretch", sets: 2, reps: "5/side" },
+      { name: "T-Spine Openers (quadruped or bench)", sets: 2, reps: "8/side" },
+      { name: "Couch Stretch / Hip Flexor", sets: 2, reps: "60s/side" },
+      { name: "Hamstring + Calf Soft Tissue", sets: 1, reps: "8–10 min" },
+      { name: "Easy Walk (optional)", sets: 1, reps: "15–25 min", notes: "Walk only — not cardio intervals" },
+    ],
+    tips: [
+      "This replaces rest days — treat it as intentional recovery",
+      "No structured cardio the day after legs",
+      "Prioritize protein + earlier sleep",
+    ],
+  },
 };
 
 function intensityFromRecovery(recovery: number | null): IntensityLabel {
@@ -47,146 +128,57 @@ function intensityFromRecovery(recovery: number | null): IntensityLabel {
   return recovery >= 25 ? "Light" : "Rest";
 }
 
-const PLANS: Record<DayType, Omit<TrainingPlan, "intensity" | "rationale">> = {
-  "Heavy strength": {
-    dayType: "Heavy strength",
-    focus: "Low-rep compound strength — drive progressive overload",
-    exercises: [
-      { name: "Barbell Back Squat", sets: 4, reps: "3–5", notes: "Leave 1–2 reps in reserve" },
-      { name: "Barbell Bench Press", sets: 4, reps: "3–5" },
-      { name: "Weighted Pull-Up or Lat Pulldown", sets: 3, reps: "5–8" },
-      { name: "Romanian Deadlift", sets: 3, reps: "5–8" },
-      { name: "Walking Lunges", sets: 2, reps: "8/leg" },
-    ],
-    tips: [
-      "Rest 2–3 minutes between heavy sets",
-      "Keep total session ~45–60 minutes to manage strain",
-      "Protein target: ~1.6–2.2 g/kg bodyweight",
-    ],
-  },
-  "Moderate strength": {
-    dayType: "Moderate strength",
-    focus: "Solid compound work at moderate intensity",
-    exercises: [
-      { name: "Goblet or Front Squat", sets: 3, reps: "6–8" },
-      { name: "Dumbbell Bench Press", sets: 3, reps: "6–8" },
-      { name: "Seated Cable Row", sets: 3, reps: "8–10" },
-      { name: "Dumbbell Romanian Deadlift", sets: 3, reps: "8–10" },
-      { name: "Plank", sets: 3, reps: "30–45s" },
-    ],
-    tips: [
-      "Stop each set 2–3 reps before failure",
-      "Optional 10-minute easy Zone 2 finish for fat loss",
-    ],
-  },
-  Hypertrophy: {
-    dayType: "Hypertrophy",
-    focus: "Higher-volume muscle building with metabolic stress",
-    exercises: [
-      { name: "Leg Press or Hack Squat", sets: 3, reps: "8–12" },
-      { name: "Incline Dumbbell Press", sets: 3, reps: "8–12" },
-      { name: "Lat Pulldown", sets: 3, reps: "10–12" },
-      { name: "Dumbbell Lateral Raise", sets: 3, reps: "12–15" },
-      { name: "Cable Tricep Pushdown", sets: 2, reps: "12–15" },
-      { name: "EZ-Bar Curl", sets: 2, reps: "10–12" },
-    ],
-    tips: [
-      "Controlled tempos (2–3s eccentric)",
-      "Keep rest ~60–90 seconds between sets",
-    ],
-  },
-  Conditioning: {
-    dayType: "Conditioning",
-    focus: "Fat-loss friendly cardio + light strength circuit",
-    exercises: [
-      { name: "Zone 2 Bike or Incline Walk", sets: 1, reps: "25–35 min", notes: "Conversational pace" },
-      { name: "Kettlebell Swings", sets: 3, reps: "12–15" },
-      { name: "Push-Ups", sets: 3, reps: "10–15" },
-      { name: "Bodyweight Squats", sets: 3, reps: "12–20" },
-      { name: "Farmer Carries", sets: 3, reps: "30–40m" },
-    ],
-    tips: [
-      "Stay mostly in Zone 2 — protect recovery for heavy days",
-      "Hydrate and prioritize sleep tonight",
-    ],
-  },
-  Rest: {
-    dayType: "Rest",
-    focus: "Active recovery — let adaptation catch up",
-    exercises: [
-      { name: "Easy Walk Outdoors", sets: 1, reps: "20–40 min" },
-      { name: "Mobility Flow (hips, T-spine, shoulders)", sets: 1, reps: "10–15 min" },
-      { name: "Light Foam Rolling", sets: 1, reps: "5–10 min" },
-    ],
-    tips: [
-      "Avoid intense training when recovery is low",
-      "Aim for earlier bedtime to rebuild sleep debt",
-      "A short walk still supports fat loss without spiking strain",
-    ],
-  },
-};
+function lighten(exercises: Exercise[]): Exercise[] {
+  return exercises.map((e) => ({
+    ...e,
+    sets: Math.max(1, e.sets - 1),
+    notes: e.notes ? `${e.notes} · reduced volume` : "Reduced volume",
+  }));
+}
 
-/**
- * Recommend today's training block from WHOOP-derived metrics.
- *
- * Thresholds (as requested):
- * - Recovery ≥ 70 → Heavy
- * - Recovery 40–69 → Moderate
- * - Recovery < 40 → Light / Rest
- *
- * Sleep and recent training load nudge Heavy ↔ Hypertrophy / Conditioning / Rest.
- */
 export function recommendTrainingPlan(input: PlanInputs): TrainingPlan {
-  const recovery = input.recoveryScore;
-  const sleepPerf = input.sleepPerformance;
-  const sleepHours = input.sleepDurationHours;
-  const workouts7d = input.workoutsLast7d;
-  const avgStrain = input.avgStrain7d;
+  const splitDay = input.splitDay;
+  const base = SPLIT_SESSIONS[splitDay];
+  let intensity = intensityFromRecovery(input.recoveryScore);
+  let exercises = base.exercises;
+  let dayType: DayType = isStretchDay(splitDay)
+    ? "Rest"
+    : splitDay === "Legs + Core"
+      ? intensity === "Heavy"
+        ? "Heavy strength"
+        : "Hypertrophy"
+      : intensity === "Heavy"
+        ? "Heavy strength"
+        : intensity === "Moderate"
+          ? "Hypertrophy"
+          : "Conditioning";
 
-  let intensity = intensityFromRecovery(recovery);
-  const sleepPoor =
-    (sleepPerf != null && sleepPerf < 70) || (sleepHours != null && sleepHours < 6.5);
-  const highRecentLoad = (avgStrain != null && avgStrain >= 14) || workouts7d >= 5;
-
-  // Escalate Rest when both recovery and sleep are compromised
-  if (intensity === "Light" && sleepPoor) {
+  if (input.splitAction === "DEVIATE_REST") {
     intensity = "Rest";
-  }
-  if (recovery != null && recovery < 40 && sleepPoor) {
-    intensity = "Rest";
-  }
-
-  let dayType: DayType;
-  switch (intensity) {
-    case "Heavy":
-      // If already training hard this week, prefer hypertrophy volume over another heavy day
-      dayType = highRecentLoad ? "Hypertrophy" : "Heavy strength";
-      break;
-    case "Moderate":
-      dayType = sleepPoor ? "Conditioning" : highRecentLoad ? "Hypertrophy" : "Moderate strength";
-      break;
-    case "Light":
-      dayType = "Conditioning";
-      break;
-    case "Rest":
-    default:
-      dayType = "Rest";
-      break;
+    dayType = "Rest";
+    exercises = SPLIT_SESSIONS["Stretch / Mobility"].exercises;
+  } else if (input.splitAction === "DEVIATE_LIGHT" || input.splitAction === "ACTIVE_RECOVERY") {
+    intensity = input.splitAction === "ACTIVE_RECOVERY" ? "Rest" : "Light";
+    dayType = input.splitAction === "ACTIVE_RECOVERY" ? "Rest" : "Conditioning";
+    exercises =
+      input.splitAction === "ACTIVE_RECOVERY"
+        ? SPLIT_SESSIONS["Stretch / Mobility"].exercises
+        : lighten(base.exercises);
   }
 
-  const base = PLANS[dayType];
   const parts: string[] = [];
-  if (recovery != null) parts.push(`Recovery ${recovery}`);
-  if (sleepPerf != null) parts.push(`sleep performance ${sleepPerf}%`);
-  if (sleepHours != null) parts.push(`${sleepHours.toFixed(1)}h sleep`);
-  if (workouts7d != null) parts.push(`${workouts7d} workouts in 7d`);
-  if (avgStrain != null) parts.push(`avg strain ${avgStrain.toFixed(1)}`);
-
-  const rationale = `Goal: muscle gain + fat loss. Based on ${parts.join(", ") || "available WHOOP metrics"}, today's recommendation is ${dayType}.`;
+  if (input.recoveryScore != null) parts.push(`Recovery ${input.recoveryScore}`);
+  if (input.sleepPerformance != null) parts.push(`sleep ${input.sleepPerformance}%`);
+  parts.push(`split: ${splitDay}`);
+  parts.push(`action: ${input.splitAction}`);
 
   return {
     intensity,
-    ...base,
-    rationale,
+    dayType,
+    splitDay,
+    focus: base.focus,
+    exercises,
+    tips: base.tips,
+    rationale: `ShankoFIT protocol — ${parts.join(" · ")}. Goal: muscle gain + fat loss.`,
   };
 }

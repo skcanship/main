@@ -1,6 +1,8 @@
-# PulsePlan — WHOOP Health Dashboard
+# ShankoFIT — WHOOP Performance Experience
 
-Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, shows a recovery / sleep / strain dashboard, and recommends a daily training block for **muscle gain + fat loss**.
+Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, with a cinematic scroll-driven dashboard for recovery / sleep / strain, body vitals, and a recovery-aware training split.
+
+**Visual direction:** Equinox-style full-bleed backgrounds + Serval-like dynamic motion (Framer Motion parallax / scroll reveals). Dense glass panels — no empty whitespace voids.
 
 | Choice | Value |
 | --- | --- |
@@ -9,6 +11,8 @@ Full-stack **Next.js** app that connects to the WHOOP API via **OAuth 2.0**, sho
 | Charts | Recharts |
 | Redirect URI | `http://localhost:3000/auth/whoop/callback` |
 | Token storage | Encrypted httpOnly session cookie (`iron-session`) |
+| Body vitals | Height 6'0 · Weight tracked in browser (starts at 160 lb) |
+| Split | Back & Bis + Cardio → Chest/Shoulders/Tris + Cardio → Legs + Core → Stretch / Mobility → repeat |
 
 ---
 

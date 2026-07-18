@@ -2,37 +2,35 @@ import type { DashboardPayload } from "@/lib/whoop/dashboard";
 
 export function WorkoutsList({ workouts }: { workouts: DashboardPayload["workouts"] }) {
   return (
-    <section className="border border-[var(--line)] bg-[var(--bg-elevated)]/70 p-6 sm:p-8">
-      <h2 className="font-display text-2xl font-semibold">Workouts</h2>
-      <p className="mt-1 text-sm text-[var(--ink-muted)]">Recent activity from WHOOP</p>
+    <div className="glass-dense p-6 sm:p-8">
+      <p className="eyebrow">Activity</p>
+      <h2 className="font-display mt-2 text-4xl">Workouts</h2>
 
       {workouts.length === 0 ? (
-        <p className="mt-4 text-[var(--ink-muted)]">No workouts found in the recent window.</p>
+        <p className="mt-4 text-[var(--ink-muted)]">No recent workouts.</p>
       ) : (
-        <ul className="mt-4 divide-y divide-[var(--line)]">
+        <ul className="mt-5 divide-y divide-[var(--line)]">
           {workouts.map((w) => (
             <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
               <div>
-                <p className="font-medium">{w.sport}</p>
-                <p className="text-xs text-[var(--ink-muted)]">
+                <p className="font-medium tracking-wide">{w.sport}</p>
+                <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
                   {new Date(w.start).toLocaleString()}
                   {w.durationMin != null ? ` · ${w.durationMin} min` : ""}
                 </p>
               </div>
-              <div className="flex gap-5 text-sm">
+              <div className="flex gap-5 text-sm text-[var(--ink-muted)]">
                 <span>
-                  <span className="text-[var(--ink-muted)]">Strain </span>
-                  {w.strain ?? "—"}
+                  Strain <span className="text-[var(--ink)]">{w.strain ?? "—"}</span>
                 </span>
                 <span>
-                  <span className="text-[var(--ink-muted)]">Avg HR </span>
-                  {w.avgHr ?? "—"}
+                  Avg HR <span className="text-[var(--ink)]">{w.avgHr ?? "—"}</span>
                 </span>
               </div>
             </li>
           ))}
         </ul>
       )}
-    </section>
+    </div>
   );
 }
