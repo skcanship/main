@@ -12,10 +12,11 @@ export type WeightEntry = {
 export const DEFAULT_BODY: BodyMetrics = {
   heightFeet: 6,
   heightInches: 0,
-  weightLbs: 160,
+  weightLbs: 154,
 };
 
-const STORAGE_KEY = "ok_body_metrics_v1";
+const STORAGE_KEY = "shankofit_body_metrics_v2";
+const LEGACY_KEYS = ["ok_body_metrics_v1", "shankofit_body_metrics_v1"];
 
 export function heightLabel(m: BodyMetrics): string {
   return `${m.heightFeet}'${m.heightInches}"`;
@@ -29,6 +30,12 @@ export function calcBmi(m: BodyMetrics): number {
   return Math.round((kg / (meters * meters)) * 10) / 10;
 }
 
+function clearLegacyWeightMemory() {
+  for (const key of LEGACY_KEYS) {
+    localStorage.removeItem(key);
+  }
+}
+
 export function loadBodyState(): { metrics: BodyMetrics; history: WeightEntry[] } {
   if (typeof window === "undefined") {
     return {
@@ -37,6 +44,7 @@ export function loadBodyState(): { metrics: BodyMetrics; history: WeightEntry[] 
     };
   }
   try {
+    clearLegacyWeightMemory();
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       const metrics = DEFAULT_BODY;
@@ -49,7 +57,7 @@ export function loadBodyState(): { metrics: BodyMetrics; history: WeightEntry[] 
       metrics: { ...DEFAULT_BODY, ...parsed.metrics },
       history: parsed.history?.length
         ? parsed.history
-        : [{ date: new Date().toISOString().slice(0, 10), weightLbs: parsed.metrics?.weightLbs ?? 160 }],
+        : [{ date: new Date().toISOString().slice(0, 10), weightLbs: parsed.metrics?.weightLbs ?? DEFAULT_BODY.weightLbs }],
     };
   } catch {
     return {

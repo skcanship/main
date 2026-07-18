@@ -19,11 +19,13 @@ export type RecompVerdict = {
   detail: string;
 };
 
-const STORAGE_KEY = "shankofit_recomp_checkins_v1";
+const STORAGE_KEY = "shankofit_recomp_checkins_v2";
+const LEGACY_KEYS = ["shankofit_recomp_checkins_v1"];
 
 export function loadCheckIns(): RecompCheckIn[] {
   if (typeof window === "undefined") return [];
   try {
+    for (const key of LEGACY_KEYS) localStorage.removeItem(key);
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     return (JSON.parse(raw) as RecompCheckIn[]).sort((a, b) => b.date.localeCompare(a.date));

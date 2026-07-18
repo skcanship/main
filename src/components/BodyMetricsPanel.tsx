@@ -14,7 +14,7 @@ import {
 export function BodyMetricsPanel() {
   const [metrics, setMetrics] = useState<BodyMetrics | null>(null);
   const [history, setHistory] = useState<WeightEntry[]>([]);
-  const [draft, setDraft] = useState("160");
+  const [draft, setDraft] = useState("154");
 
   useEffect(() => {
     const state = loadBodyState();

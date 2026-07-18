@@ -23,7 +23,7 @@ function todayIso() {
 
 export function RecompCheckInCard({ compact = false }: { compact?: boolean }) {
   const [items, setItems] = useState<RecompCheckIn[]>([]);
-  const [weight, setWeight] = useState("160");
+  const [weight, setWeight] = useState("154");
   const [waist, setWaist] = useState("32");
   const [energy, setEnergy] = useState(3);
   const [mood, setMood] = useState(3);
