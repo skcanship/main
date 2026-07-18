@@ -47,9 +47,9 @@ export function TrendsChart({ trends }: { trends: TrendPoint[] }) {
               labelStyle={{ color: "#f7f4ef" }}
             />
             <Legend />
-            <Line type="monotone" dataKey="recovery" name="Recovery" stroke="#8fbc8f" strokeWidth={1.5} dot={false} connectNulls />
-            <Line type="monotone" dataKey="sleepHours" name="Sleep (h)" stroke="#c2a878" strokeWidth={1.5} dot={false} connectNulls />
-            <Line type="monotone" dataKey="strain" name="Strain" stroke="#f7f4ef" strokeWidth={1.5} dot={false} connectNulls />
+            <Line type="monotone" dataKey="recovery" name="Recovery" stroke="#30d158" strokeWidth={2} dot={false} connectNulls />
+            <Line type="monotone" dataKey="sleepHours" name="Sleep (h)" stroke="#5ac8fa" strokeWidth={2} dot={false} connectNulls />
+            <Line type="monotone" dataKey="strain" name="Strain" stroke="#ff9f0a" strokeWidth={2} dot={false} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
